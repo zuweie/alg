@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "kv.h"
 
-void fill_kv_array_random(KV kv_arr[], size_t size){
+void fill_kv_array_random(kv_t kv_arr[], size_t size){
    srand(time(NULL));
    int i;
    for (i=0; i<size; ++i){
@@ -10,7 +10,7 @@ void fill_kv_array_random(KV kv_arr[], size_t size){
    }
 }
 
-void print_kv_key(KV kv_arr[], size_t size){
+void print_kv_key(kv_t kv_arr[], size_t size){
    int i;
    printf("key: ");
    for (i=0; i<size; ++i){

@@ -4,7 +4,7 @@
 typedef struct kv {
    int key;
    void* pdata;
-} KV;
+} kv_t;
 
 #endif
 

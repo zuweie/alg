@@ -12,7 +12,7 @@ void test_insertion_sort(void){
    // TODO : make a kv array
    int i;
    const size_t SIZE = 10;
-   KV kv_arr[SIZE];
+   kv_t kv_arr[SIZE];
    fill_kv_array_random(kv_arr, SIZE);
    
    printf("sort before:\n");
@@ -32,7 +32,7 @@ void test_insertion_sort(void){
 void test_merge_sort(void){
   int i;
   const size_t SIZE = 6;
-  KV kv_arr[SIZE];
+  kv_t kv_arr[SIZE];
   fill_kv_array_random(kv_arr, SIZE);
   print_kv_key(kv_arr, SIZE);
   merge_sort(kv_arr, 0, SIZE-1);

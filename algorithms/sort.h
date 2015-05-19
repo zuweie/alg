@@ -3,6 +3,6 @@
 
 #include "kv.h"
 
-int insertion_sort(KV kv_arr[], size_t size);
-int merge_sort(KV kv_arr[], size_t p, size_t r);
+int insertion_sort(kv_t kv_arr[], size_t size);
+int merge_sort(kv_t kv_arr[], size_t p, size_t r);
 #endif
