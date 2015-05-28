@@ -7,7 +7,7 @@ void fill_kv_array_random(kv_t kv_arr[], size_t size){
    srand(time(NULL));
    int i;
    for (i=0; i<size; ++i){
-      kv_arr[i].key = rand() % 1000;
+      kv_arr[i].key = rand() % 10000;
       kv_arr[i].pdata = NULL;
    }
 }

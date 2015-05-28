@@ -9,6 +9,10 @@
 #include "sort.h"
 #include "heap.h"
 #include "my_tool.h"
+#include "my_select.h"
+
+kv_t* pkv_arr;
+size_t arr_size;
 
 void test_insertion_sort(void){
    // TODO : make a kv array
@@ -70,6 +74,54 @@ void test_heap_sort(void) {
    print_kv_key(kv_arr, SIZE);
 }
 
+void test_quick_sort(void){
+
+   //const size_t SIZE = 10;
+   //kv_t kv_arr[SIZE];
+ 
+   //fill_kv_array_random(kv_arr, SIZE);
+   print_kv_key(pkv_arr, arr_size);
+   quick_sort(pkv_arr, 0, arr_size-1, partition);
+   print_kv_key(pkv_arr, arr_size);
+   
+   // ASSERT 
+   int i;
+   for (i=1; i<arr_size; ++i){
+	CU_ASSERT(pkv_arr[i].key >= pkv_arr[i-1].key);
+   }
+}
+
+void test_random_quick_sort(void){
+ 
+  print_kv_key(pkv_arr, arr_size);
+  quick_sort(pkv_arr, 0, arr_size-1, randomized_partition);
+  print_kv_key(pkv_arr, arr_size);  
+ 
+}
+
+void test_select_max_min(void){
+  print_kv_key(pkv_arr, arr_size);
+  quick_sort(pkv_arr, 0, arr_size-1, randomized_partition);
+  print_kv_key(pkv_arr, arr_size);
+  kv_t *pmax, *pmin;
+  select_max_min(pkv_arr, arr_size, &pmax, &pmin);
+  printf("max : %d, min : %d \n", pmax->key, pmin->key);
+}
+
+void test_randomized_select_imax(void){
+  
+   print_kv_key(pkv_arr, arr_size);
+  
+   kv_t *p;
+   randomized_select_imax(pkv_arr, 0, arr_size-1, 4, &p);
+
+   printf("imax : %d\n", p->key);
+
+   quick_sort(pkv_arr, 0, arr_size-1, randomized_partition);
+   print_kv_key(pkv_arr, arr_size);
+
+}
+
 int suite_success_init(void){
     return 0;
 }
@@ -88,8 +140,16 @@ BOOLEAN grep_case(int argc, char* argv[], char* _case){
 } 
 
 int main( int argc, char* argv[] ){
-   
-   int i;
+
+   arr_size = atoi(argv[2]);
+   if (arr_size <= 0){
+	return -1;
+   }   
+
+   //弄些实验数据
+   pkv_arr = malloc(sizeof(kv_t) * arr_size);
+   fill_kv_array_random(pkv_arr, arr_size);
+    
    CU_pSuite pSuite = NULL;
   
    if (CUE_SUCCESS != CU_initialize_registry()){
@@ -126,9 +186,35 @@ int main( int argc, char* argv[] ){
 	CU_cleanup_registry();
 	return CU_get_error();
    }
+
+   if (grep_case(argc, argv, "quick_sort")
+   && (NULL == CU_add_test(pSuite, "test_quick_sort", test_quick_sort))){
+	CU_cleanup_registry();
+        return CU_get_error();
+   }
+
+   if (grep_case(argc, argv, "random_quick_sort")
+   && (NULL == CU_add_test(pSuite, "test_randowm_quick_sort", test_random_quick_sort))){
+	CU_cleanup_registry();
+        return CU_get_error();
+   }
+
+   if (grep_case(argc, argv, "select_max_min")
+   && (NULL == CU_add_test(pSuite, "test_max_min", test_select_max_min))){
+	CU_cleanup_registry();
+	return CU_get_error();
+   }
+
+   if (grep_case(argc, argv, "select_imax")
+   && (NULL == CU_add_test(pSuite, "test_select_imax", test_randomized_select_imax))){
+	CU_cleanup_registry();
+	return CU_get_error();
+   }
+
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();
+  free(pkv_arr);
   return CU_get_error();
 }
 

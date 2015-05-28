@@ -84,5 +84,58 @@ int merge(kv_t kv_arr[], size_t s1, size_t sm, size_t s2){
    }
    printf("\n\n");
 #endif
+   return 0;
+}
+
+int partition(kv_t arr[], int p, int r){
+
+    // 将最后一个做为标杆
+    int key = arr[r].key;
+    int i = p-1;
+    int j;
+    kv_t tmp;
+
+    // 将大于最后一个的甩在后面
+    // 将小于最后一个的甩在前面。
+    // 最后将最后一个和甩下的一个交换。
+    // 这就完成了将一个部分序列分开两部分了。
+
+    for (j=p; j<=r-1; ++j){
+	if (arr[j].key <= key){
+            if (i != j){
+		++i;
+	        tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp; 
+	    }else{
+	        ++i;
+	    }    
+        }
+    }
+    tmp = arr[i+1];
+    arr[i+1] = arr[r];
+    arr[r] = tmp;
+    return i+1;
+}
+
+int randomized_partition(kv_t arr[], int p, int r){
+   srand(time(NULL));
+   int dest = r - p + 1;
+   int i = ( rand() % dest ) + p;
+
+   kv_t tmp = arr[p];
+   arr[p] = arr[i];
+   arr[i] = tmp;
+
+   partition(arr, p, r);
+}
+
+int quick_sort(kv_t arr[], int p, int r, int (* partition_func)(kv_t arr[], int p, int r)){
+
+   if (p < r){
+       int q = partition_func(arr, p, r);
+       quick_sort(arr, p, q-1, partition_func);
+       quick_sort(arr, q+1, r, partition_func);
+   }
 }
 
