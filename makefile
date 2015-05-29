@@ -7,10 +7,10 @@ CC=gcc
 
 VPATH = algorithms test_case
  
-test_alg : test_alg.o sort.o heap.o my_select.o my_tool.o
+test_alg : test_alg.o sort.o heap.o my_select.o my_list.o my_tool.o
 	$(CC) $(CFLAG)  $^ $(CUNIT_INC) $(LIB) -lcunit -lm -o $(BIN)/$@
 
-test_alg.o : test_alg.c kv.h sort.h heap.h my_select.h my_tool.h 
+test_alg.o : test_alg.c kv.h sort.h heap.h my_select.h my_list.h my_tool.h 
 	$(CC) $(ALG_INC) $(CFLAG) -c $<
 
 sort.o : sort.c sort.h kv.h
@@ -23,6 +23,9 @@ my_select.o : my_select.c my_select.h
 	$(CC) $(CFLAG) -c $<
 
 my_tool.o : my_tool.c my_tool.h
+	$(CC) $(CFLAG) -c $<
+
+my_list.o : my_list.c my_list.h
 	$(CC) $(CFLAG) -c $<
 
 clean:

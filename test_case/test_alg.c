@@ -10,6 +10,7 @@
 #include "heap.h"
 #include "my_tool.h"
 #include "my_select.h"
+#include "my_list.h"
 
 kv_t* pkv_arr;
 size_t arr_size;
@@ -122,6 +123,16 @@ void test_randomized_select_imax(void){
 
 }
 
+void test_linked_list(void) {
+   list_t list;
+   init_list(&list);
+   
+   fill_linked_list_random(&list, arr_size);
+
+   print_linked_list(&list, FALSE);
+   cleanup_linked_list(&list);
+}
+
 int suite_success_init(void){
     return 0;
 }
@@ -211,6 +222,11 @@ int main( int argc, char* argv[] ){
 	return CU_get_error();
    }
 
+   if (grep_case(argc, argv, "linked_list")
+   && (NULL == CU_add_test(pSuite, "test_linked_list", test_linked_list))){
+	CU_cleanup_registry();
+        return CU_get_error();
+   }
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();
