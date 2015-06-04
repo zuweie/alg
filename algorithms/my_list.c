@@ -33,6 +33,28 @@ int insert_list(list_t* plist, node_t* pnode){
     return ++(plist->size);
 }
 
+int get_node(list_t* plist, int i, node_t** pnode){
+    *pnode = NULL;
+    node_t* pn;
+    int j;
+    int hs = (plist->size) / 2;
+    if (i <= hs)
+	// 从头开始找起
+	for (pn = LIST_FIRST(plist), j=0; 
+	     pn != LIST_TAIL(plist), j != i; 
+	     pn = pn->next, ++j);
+    else
+        // 从尾部开始找起
+	for (pn = LIST_LAST(plist), j=plist->size-1;
+	     pn != LIST_HEAD(plist), j != i;
+	     pn = pn->prev, --j);
+
+    if (j == i)
+    	*pnode = pn;
+
+    return 0;
+}
+
 int delete_list(list_t* plist, int key, node_t** pnode){
 
     search_list(plist, key, pnode);

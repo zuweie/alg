@@ -28,5 +28,6 @@ int init_list(list_t* plist);
 int search_list(list_t* plist, int key, node_t** pnode);
 int delete_list(list_t* plist, int key, node_t** pnode);
 int insert_list(list_t* plist, node_t *pnode);
+int get_node(list_t* plist, int i, node_t** pnode);
 
 #endif

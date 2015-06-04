@@ -11,6 +11,7 @@
 #include "my_tool.h"
 #include "my_select.h"
 #include "my_list.h"
+#include "my_hash.h"
 
 kv_t* pkv_arr;
 size_t arr_size;
@@ -130,7 +131,28 @@ void test_linked_list(void) {
    fill_linked_list_random(&list, arr_size);
 
    print_linked_list(&list, FALSE);
+   print_linked_list(&list, TRUE);
+
+   node_t* pn;
+   get_node(&list, 4, &pn);
+   printf("\nwe get 4th node : %d \n", pn->kv.key);
+ 
+   get_node(&list, 6, &pn);
+   printf("we get 6th node : %d \n", pn->kv.key);
+
+   int k = pn->kv.key;
+
+   delete_list(&list, k, &pn);
+
+   printf("delete 6th node : %d \n", pn->kv.key);
+   print_linked_list(&list, FALSE);
+   free(pn);
    cleanup_linked_list(&list);
+}
+
+void test_hash_key(void){
+    int key = hash_key(123456);
+    printf("key is : %d \n", key);
 }
 
 int suite_success_init(void){
@@ -227,6 +249,13 @@ int main( int argc, char* argv[] ){
 	CU_cleanup_registry();
         return CU_get_error();
    }
+
+   if (grep_case(argc, argv, "hash_key")
+   && (NULL == CU_add_test(pSuite, "test_hash_key", test_hash_key))){
+	CU_cleanup_registry();
+	return CU_get_error();
+   }
+
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();

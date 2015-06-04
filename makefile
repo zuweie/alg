@@ -1,32 +1,46 @@
-CUNIT_INC := -I/usr/local/include/CUnit/ 
-ALG_INC   := -I/home/zuweie/WorkShop/code/Algorithms/algorithms/
-LIB       := -L/usr/local/lib/ 
-CFLAG     := -g 
-BIN=/home/zuweie/WorkShop/code/Algorithms/out
-CC=gcc
+programs    := test_alg
+sources     := 
+extra_clean := *~
 
-VPATH = algorithms test_case
- 
-test_alg : test_alg.o sort.o heap.o my_select.o my_list.o my_tool.o
-	$(CC) $(CFLAG)  $^ $(CUNIT_INC) $(LIB) -lcunit -lm -o $(BIN)/$@
 
-test_alg.o : test_alg.c kv.h sort.h heap.h my_select.h my_list.h my_tool.h 
-	$(CC) $(ALG_INC) $(CFLAG) -c $<
+objects       = $(subst .c,.o,$(sources))
+dependencies  = $(subst .c,.d,$(sources))
 
-sort.o : sort.c sort.h kv.h
-	$(CC) $(CFLAG) -c $<
 
-heap.o : heap.c heap.h kv.h
-	$(CC) $(CFLAG) -c $<
+project_dir   := /home/zuweie/WorkShop/code/Algorithms
+include_dirs  := $(project_dir)/algorithms
+sources_dirs  := $(project_dir)/algorithms
+testcase_dirs := $(project_dir)test_case
 
-my_select.o : my_select.c my_select.h
-	$(CC) $(CFLAG) -c $<
+bin          := out
 
-my_tool.o : my_tool.c my_tool.h
-	$(CC) $(CFLAG) -c $<
+CFLAGS     += $(addprefix -I, $(include_dirs)) -lm -lcunit
+vpath %.h $(include_dirs)
 
-my_list.o : my_list.c my_list.h
-	$(CC) $(CFLAG) -c $<
+MV  :=  mv -f
+RM  :=  rm -f
+SED := sed
 
+include algorithms/alg.mk
+include test_case/test_case.mk
+
+.PHONY: all
+all: $(programs)
+
+$(programs): $(objects)
+	$(CC) $(objects) $(CFLAGS) -o $(bin)/$@
+
+.PHONY: clean
 clean:
-	rm -f *.o *~  algorithms/*.*~ test_case/*.*~ out/*  
+	$(RM) $(objects) $(bin)/$(programs) $(dependencies) $(extra_clean)
+
+ifneq "$(MAKECMDGOALS)" "clean"
+   include $(dependencies)
+endif
+
+%.d: %.c
+	$(CC) $(CFLAGS) $(TARGET_ACH) -MM $< | \
+	$(SED) 's, \($notdi $*)\.o\) *:,$(dir $@)\1 $@: ,' > $@.tmp
+	$(MV) $@.tmp $@
+
+ 

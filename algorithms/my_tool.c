@@ -64,6 +64,7 @@ void cleanup_linked_list(list_t* plist){
 void print_linked_list(list_t *plist, BOOLEAN reverse){
 
     node_t *pf;
+    printf("\n");
     if(reverse){
 	printf("print reverse : \n");
      	for (pf = LIST_LAST(plist); pf != LIST_HEAD(plist); pf = pf->prev){
