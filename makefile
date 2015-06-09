@@ -14,7 +14,7 @@ testcase_dirs := $(project_dir)test_case
 
 bin          := out
 
-CFLAGS     += $(addprefix -I, $(include_dirs)) -lm -lcunit
+CFLAGS     += $(addprefix -I, $(include_dirs)) -lm -lcunit -g
 vpath %.h $(include_dirs)
 
 MV  :=  mv -f
