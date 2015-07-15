@@ -3,10 +3,10 @@
 
 #include "kv.h"
 
-#define LIST_HEAD(l) (&(l->sentinel))
-#define LIST_TAIL(l) (&(l->sentinel))
-#define LIST_FIRST(l) LIST_HEAD(l)->next
-#define LIST_LAST(l)  LIST_TAIL(l)->prev
+#define LIST_HEAD(pl) (&((pl)->sentinel))
+#define LIST_TAIL(pl) (&((pl)->sentinel))
+#define LIST_FIRST(pl) LIST_HEAD(pl)->next
+#define LIST_LAST(pl)  LIST_TAIL(pl)->prev
 
 typedef struct l_node {
 
@@ -27,7 +27,8 @@ typedef struct linked_list {
 int init_list(list_t* plist);
 int search_list(list_t* plist, int key, node_t** pnode);
 int delete_list(list_t* plist, int key, node_t** pnode);
-int insert_list(list_t* plist, node_t *pnode);
+int insert_list_at_head(list_t* plist, node_t *pnode);
+int insert_list_at_tail(list_t* plist, node_t *pnode);
 int get_node(list_t* plist, int i, node_t** pnode);
-
+int pop_list(list_t* plist, node_t** pnode);
 #endif

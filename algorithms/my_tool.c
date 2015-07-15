@@ -3,10 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "my_tool.h"
+
 #include "kv.h"
 #include "heap.h"
+#include "my_tree.h"
 #include "my_list.h"
+#include "my_tool.h"
 
 void fill_kv_array_random(kv_t kv_arr[], size_t size){
    srand(time(NULL));
@@ -51,7 +53,7 @@ void fill_linked_list_random(list_t *plist, size_t size){
 	node_t* node = (node_t*)malloc(sizeof(node_t));
 	node->kv.key = rand() % 1000;
 	node->kv.pdata = NULL;
-	insert_list(plist, node);
+	insert_list_at_head(plist, node);
    }
 }
 
@@ -76,3 +78,90 @@ void print_linked_list(list_t *plist, BOOLEAN reverse){
         }
     }
 }
+
+
+void print_c(size_t n, char c){
+     int i=0; 
+     for (;i<n; ++i){
+        putchar(c);
+     }
+}
+
+void get_tree_node(tnode_t* pn, list_t* plist, int level){
+
+    if (pn != NULL){
+
+	int nextlevel = level+1;
+	 node_t* pnode = NULL;
+	 list_t* plevel = NULL;
+
+	 search_list(plist, level, &pnode);
+	
+         if (pnode == NULL){
+            // 新建一个节点
+            pnode = (node_t*)malloc(sizeof(node_t));
+	    // 在此建造一条新的list作为新level的容器。
+            plevel = (list_t*)malloc(sizeof(list_t));
+	    
+ 	    //printf("create and insert new level list (%d)\n", level);
+	    init_list(plevel);
+
+	    pnode->kv.key = level;
+            pnode->kv.pdata = (void*)plevel;
+	    insert_list_at_tail(plist, pnode);
+         }else{
+	   plevel = (list_t*)pnode->kv.pdata;
+         }
+
+         // 将树的节点放入相应的level的list中
+         node_t* ptt = (node_t*)malloc(sizeof(node_t));
+	 ptt->kv.key = (long)pn;
+	 ptt->kv.pdata = (void*)pn;
+         insert_list_at_tail(plevel, ptt); 
+
+	 get_tree_node(pn->left, plist, nextlevel);
+	 get_tree_node(pn->right, plist, nextlevel);
+    }
+}
+
+void print_tree(tree_t* pt, size_t width){
+
+     list_t llist;
+     init_list(&llist);
+
+     get_tree_node(pt->root, &llist, 0);
+
+     // print the tree
+     node_t *pnode = NULL;
+     for (pnode = LIST_FIRST(&llist); pnode != LIST_TAIL(&llist); pnode=pnode->next){
+	  list_t* plevel = (list_t*)pnode->kv.pdata;
+	  int level      = pnode->kv.key;
+
+	  node_t* pn = NULL;
+	  for (pn = LIST_FIRST(plevel); pn != LIST_TAIL(plevel); pn = pn->next){
+		tnode_t* pt = (tnode_t*) pn->kv.pdata;
+		printf("%d(level:%d) ", pt->kv.key, level);
+          }
+	  printf("\n");
+     }
+     
+     // clean up all the malloc data
+     
+     for (pnode = LIST_FIRST(&llist); pnode != LIST_TAIL(&llist); pnode=pnode->next){
+	list_t* plevel = (list_t*)pnode->kv.pdata;
+        int level      = pnode->kv.key;
+        //printf("clean up %d level data\n", level);
+	node_t* pn = NULL;
+	
+	while(pop_list(plevel, &pn)){
+	   
+	   free(pn);
+        }
+	free(plevel);
+	pnode->kv.pdata = NULL;
+     }
+}
+     
+
+
+

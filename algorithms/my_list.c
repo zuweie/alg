@@ -20,8 +20,8 @@ int search_list(list_t* plist, int key, node_t** pnode){
     return 0;
 }
 
-// insert a node before a 'key' node
-int insert_list(list_t* plist, node_t* pnode){
+// insert like head
+int insert_list_at_head(list_t* plist, node_t* pnode){
     node_t* ph = LIST_HEAD(plist);
     node_t* pf = LIST_FIRST(plist);
 
@@ -31,6 +31,18 @@ int insert_list(list_t* plist, node_t* pnode){
     pf->prev = pnode;
     pnode->prev = ph;
     return ++(plist->size);
+}
+
+int insert_list_at_tail(list_t* plist, node_t* pnode){
+    node_t* pt = LIST_TAIL(plist);
+    node_t* pl = LIST_LAST(plist);
+
+    pt->prev = pnode;
+    pnode->prev = pl;
+
+   pl->next = pnode;
+   pnode->next = pt;
+   return ++(plist->size);
 }
 
 int get_node(list_t* plist, int i, node_t** pnode){
@@ -66,5 +78,15 @@ int delete_list(list_t* plist, int key, node_t** pnode){
     }else{
 	return -1;
     }
+}
+
+int pop_list(list_t* plist, node_t** pnode){
+     if (plist->size != 0){
+       node_t* pn = LIST_LAST(plist);
+       return delete_list(plist, pn->kv.key, pnode);
+     }else{
+	*pnode = NULL;
+        return plist->size;
+     }
 }
 

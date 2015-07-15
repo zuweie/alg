@@ -15,4 +15,15 @@ typedef struct _tree{
   size_t   size;
 } tree_t;
 
+int init_tnode(tnode_t* pt, kv_t kv);
+int init_tree(tree_t* ptree);
+int inorder_tree_walk (tnode_t* ptnode, int (*tnode_func)(tnode_t* ptnode));
+tnode_t* tree_search(tnode_t* ptnode, int key);
+tnode_t* tree_minimum (tnode_t* ptnode);
+tnode_t* tree_maximum(tnode_t* ptnode);
+tnode_t* tree_successor(tnode_t* ptnode);
+tnode_t* tree_presuccessor(tnode_t* ptnode);
+int tree_insert(tree_t* pt, tnode_t* pz);
+tnode_t* _tree_delete(tree_t* pt, tnode_t* pz);
+tnode_t* tree_delete(tree_t* pt, int key);
 #endif

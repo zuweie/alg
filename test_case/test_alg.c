@@ -12,6 +12,7 @@
 #include "my_select.h"
 #include "my_list.h"
 #include "my_hash.h"
+#include "my_tree.h"
 
 kv_t* pkv_arr;
 size_t arr_size;
@@ -155,6 +156,22 @@ void test_hash_key(void){
     printf("key is : %d \n", key);
 }
 
+void test_build_tree(void){
+
+    tree_t tree;
+    init_tree(&tree);
+    tnode_t tnode[arr_size];
+    print_kv_key(pkv_arr, arr_size);
+    int i;
+    for (i=0; i<arr_size; ++i){
+	pkv_arr[i];
+        init_tnode(&tnode[i], pkv_arr[i]);
+	tree_insert(&tree, &tnode[i]);
+    }
+
+    print_tree(&tree, 48);
+}
+
 int suite_success_init(void){
     return 0;
 }
@@ -254,6 +271,12 @@ int main( int argc, char* argv[] ){
    && (NULL == CU_add_test(pSuite, "test_hash_key", test_hash_key))){
 	CU_cleanup_registry();
 	return CU_get_error();
+   }
+
+   if (grep_case(argc, argv, "build_tree")
+   && (NULL == CU_add_test(pSuite, "test_build_tree", test_build_tree))){
+	CU_cleanup_registry();
+        return CU_get_error();
    }
 
   CU_basic_set_mode(CU_BRM_VERBOSE);

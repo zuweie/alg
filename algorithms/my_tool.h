@@ -2,6 +2,7 @@
 #define __MY_TOOL_H__
 
 #include "my_list.h"
+#include "my_tree.h"
 
 #define BOOLEAN int
 #define TRUE 1
@@ -13,5 +14,5 @@ void print_heap(kv_t kv_arr[], size_t size);
 void fill_linked_list_random(list_t* plist, size_t size);
 void print_linked_list(list_t* plist, BOOLEAN reverse);
 void cleanup_linked_list(list_t* plist);
-
+void print_tree(tree_t* pt, size_t width);
 #endif
