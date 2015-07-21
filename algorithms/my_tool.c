@@ -124,6 +124,19 @@ void get_tree_node(tnode_t* pn, list_t* plist, int level){
     }
 }
 
+char* is_what(tnode_t* pn){
+	
+   if (pn != NULL && pn->parent == NULL){
+	return "root";
+   }else if (pn != NULL && pn->parent->left == pn){
+	return "left";
+   }else if (pn != NULL && pn->parent->right == pn){
+	return "right";
+   }else{
+	return "NULL";
+   }
+}
+
 void print_tree(tree_t* pt, size_t width){
 
      list_t llist;
@@ -140,7 +153,7 @@ void print_tree(tree_t* pt, size_t width){
 	  node_t* pn = NULL;
 	  for (pn = LIST_FIRST(plevel); pn != LIST_TAIL(plevel); pn = pn->next){
 		tnode_t* pt = (tnode_t*) pn->kv.pdata;
-		printf("%d(level:%d) ", pt->kv.key, level);
+		printf(" %d(l:%d p:%d %s) ", pt->kv.key, level, pt->parent !=NULL?pt->parent->kv.key:0, is_what(pt));
           }
 	  printf("\n");
      }

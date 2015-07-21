@@ -37,7 +37,7 @@ tnode_t* tree_search(tnode_t* ptnode, int key){
 
 tnode_t* tree_minimum (tnode_t* ptnode){
     tnode_t* pt = ptnode->left;
-    while(pt != NULL){
+    while(pt->left != NULL){
        pt = pt->left;
     }
     return pt;
@@ -45,7 +45,7 @@ tnode_t* tree_minimum (tnode_t* ptnode){
 
 tnode_t* tree_maximum(tnode_t* ptnode){
    tnode_t* pt = ptnode->right;
-   while(pt != NULL){
+   while(pt->right != NULL){
       pt = pt->right;
    }
    return pt;
