@@ -36,19 +36,19 @@ tnode_t* tree_search(tnode_t* ptnode, int key){
 }
 
 tnode_t* tree_minimum (tnode_t* ptnode){
-    tnode_t* pt = ptnode->left;
-    while(pt->left != NULL){
-       pt = pt->left;
+
+    while(ptnode->left != NULL){
+       ptnode = ptnode->left;
     }
-    return pt;
+    return ptnode;
 }
 
 tnode_t* tree_maximum(tnode_t* ptnode){
-   tnode_t* pt = ptnode->right;
-   while(pt->right != NULL){
-      pt = pt->right;
+
+   while(ptnode->right != NULL){
+      ptnode = ptnode->right;
    }
-   return pt;
+   return ptnode;
 }
 
 tnode_t* tree_successor(tnode_t* ptnode){

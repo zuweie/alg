@@ -64,7 +64,7 @@ rbnode_t* rbtree_presuccessor(rbnode_t* ptnode)
 {
 
    if (ptnode->left != NULL){
-	return rbtree_maximum(ptnode->left);
+	return rbtree_maximum(prb, ptnode->left);
    }
 
    rbnode_t* pp = ptnode->parent;
@@ -75,7 +75,7 @@ rbnode_t* rbtree_presuccessor(rbnode_t* ptnode)
    return pp;
 }
 
-int left_rotate(rbtree_t* prb, rbnode_t* px)
+int left_rotate(rbnode_t* px)
 {
    // 先东自己的右子树。
    // py为px 的右子树。
@@ -120,7 +120,7 @@ int right_rotate(rbtree_t* prb, rbnode_t* px)
 
    py->parent = px->parent;
 
-   if(px->parent == NULL){
+   if(px->parent == RB_NIL(prb)){
       prb->root = py;
    }else if (px->parent->left == px){
       px->parent->left = py;
@@ -132,24 +132,22 @@ int right_rotate(rbtree_t* prb, rbnode_t* px)
    return 0;
 }
 
-rbnode_t* rb_search(rbnode_t* pt, int key)
-{
-    if (pt == NULL || pt->kv.key == key){
+rbnode_t* rb_search(rbtree_t* prb, rbnode_t* pt, int key){
+    if (pt == RB_NIL(prb) || pt->kv.key == key){
         return pt;
     }
 
     if (key < pt->kv.key){
-	return rb_search(pt->left, key);
+	return rb_search(prb, pt->left, key);
     }else{
-	return rb_search(pt->right, key);
+	return rb_search(prb, pt->right, key);
     }
 }
 
 
-int rb_insert_fixup(rbtree_t* prb, rbnode_t* pz)
-{
+int rb_insert_fixup(rbtree_t* prb, rbnode_t* pz){
 
-    while(pz->parent != NULL &&  pz->parent->color == RED){
+    while( pz->parent->color == RED){
 
        // 能来到这里都违反了性质4 ： 老子是红色。但自己也是红色。
        // pz的老子是左子树
@@ -158,7 +156,7 @@ int rb_insert_fixup(rbtree_t* prb, rbnode_t* pz)
 	   // py 是 pz 老子的右兄弟。也就是其右叔叔
            rbnode_t* py = pz->parent->parent->right;
 	   
-	   if (py != NULL && py->color == RED){
+	   if (py->color == RED){
                // 如果其叔叔是红色 case 1
                // 将pz老子染为黑色
                pz->parent->color = BLACK;
@@ -190,7 +188,7 @@ int rb_insert_fixup(rbtree_t* prb, rbnode_t* pz)
        }else{
 	   // py 的 pz 是左子树， 也就是左叔叔。
            rbnode_t* py = pz->parent->parent->left;
-	   if (py != NULL && py->color == RED){
+	   if (py->color == RED){
               //如果其叔叔是红色 CASE 1
               // 将pz的老子染为黑色。
 	      pz->parent->color = BLACK;
@@ -224,12 +222,11 @@ int rb_insert_fixup(rbtree_t* prb, rbnode_t* pz)
     return 0;
 }
 
-int rb_insert(rbtree_t* prb, rbnode_t* pz)
-{
-    rbnode_t* py = NULL;
+int rb_insert(rbtree_t* prb, rbnode_t* pz){
+    rbnode_t* py = RB_NIL(prb);
     rbnode_t* px = prb->root;
     
-    while(px != NULL){
+    while(px != RB_NIL(prb)){
         py = px;
         if (pz->kv.key < px->kv.key){
 	    px = px->left;
@@ -240,7 +237,7 @@ int rb_insert(rbtree_t* prb, rbnode_t* pz)
     
     pz->parent = py;
 
-    if (py == NULL){
+    if (py == RB_NIL(prb)){
 	prb->root = pz;
     }else if (pz->kv.key < py->kv.key){
 	py->left = pz;
@@ -248,14 +245,13 @@ int rb_insert(rbtree_t* prb, rbnode_t* pz)
         py->right = pz;
     }
 
-    pz->left = NULL;
-    pz->right = NULL;
+    pz->left = RB_NIL(prb);
+    pz->right = RB_NIL(prb);
     pz->color = RED;
     return rb_insert_fixup(prb, pz);
 }
 
-int rb_delete_fixup(rbtree_t* prb, rbnode_t* px, rbnode_t* px_parent, int is_left)
-{
+int rb_delete_fixup(rbtree_t* prb, rbnode_t* px){
 
     /*
      * 麻痹，好鸡巴复杂的逻辑啊。到底是怎么回事。谁他妈的发明红黑树啊。
@@ -278,44 +274,32 @@ int rb_delete_fixup(rbtree_t* prb, rbnode_t* px, rbnode_t* px_parent, int is_lef
      *
      */
 
-    // 这里的px很可能是NULL
-    // 若为NULL 则 那个    
     rbnode_t* pw;
-    while(px == NULL || (px != prb->root &&  px->color == BLACK)){
-        
-        if (px != NULL){
-            px_parent = px->parent;
-	    if (px == px_parent->left)
-		is_left = 1;
-	    else
-		is_left = 0;
-        }
-
-	if (is_left){
+    while(px != prb->root &&  px->color == BLACK){
+	if (px == px->parent->left){
 	    // 如果px是左孩子。
             // 取pw为px的右兄弟。
-	    pw = px_parent->right;
+	    pw = px->parent->right;
             if (pw->color == RED){
 		//CASE 1
 		//若pw是红色。将其染为黑色
 		pw->color = BLACK;
 		// 将其老子染为红色。
-		px_parent = RED;
+		pw->parent = RED;
 	        // 将老子转下来. px->parent 其实和 pw->parent 是一样的。
-                left_rotate(prb, px_parent);
+                left_rotate(prb, px->parent);
 		// 左转了一下以后pw变成px的老子的老子。
                 // 再把pw移下来变回px的右兄弟。
-   		pw = px_parent->right;
+   		pw = px->parent->right;
 	     }
-             if ((pw->left == NULL || pw->left->color == BLACK) 
-	       && (pw->right ==  NULL || pw->right->color == BLACK)){
+             if (pw->left->color == BLACK && pw->right->color == BLACK){
                 // 若是pw的两个儿子都是黑色的。CASE 2
 		// 将其pw染为红色
 		 pw->color = RED;
-		 px = px_parent;
+		 px = px->parent;
               }else{ 
                    // CASE 3 
-		 if (pw->right == NULL || pw->right->color == BLACK){
+		 if (pw->right->color == BLACK){
                       // 将CASE 3 转变为CASE 4
 		      // 这里有一个右孩子是黑色，且左孩子是红色。
 		      // 就将其红色的左孩子染为黑色。
@@ -327,79 +311,70 @@ int rb_delete_fixup(rbtree_t* prb, rbnode_t* px, rbnode_t* px_parent, int is_lef
 		    pw = pw->parent->right;
                  }
 		   // CASE 4 
-	         pw->color = px_parent->color;
-		 px_parent->color = BLACK;
-		 if (pw->right)
-                     pw->right->color  = BLACK;
-		 left_rotate(prb, px_parent);
+	         pw->color = px->parent->color;
+		 px->parent->color = BLACK;
+                 pw->right->color  = BLACK;
+		 left_rotate(prb, px->parent);
 		 px = prb->root;
                } // else
         }else{
 	    // px 为右孩子
 	    // pw 为其左叔叔
-	    pw = px_parent->left;
+	    pw = px->parent->left;
 	    if (pw->color == RED){
                 // CASE 1
                 pw->color = BLACK;
-	        px_parent->color = RED;
-                right_rotate(prb, px_parent);
-                pw = px_parent->left;
+	        px->parent->color = RED;
+                right_rotate(prb, px->parent);
+                pw = px->parent->left;
             }
 	    
-            if ((pw->left == NULL || pw->left->color == BLACK) 
-             && (pw->right == NULL || pw->right->color == BLACK)){
+            if (pw->left->color == BLACK && pw->right->color == BLACK){
 		// CASE 2
                 pw->color = RED;
-                px = px_parent;
+                px = px->parent;
             }else{
                 // CASE 3
-                if (pw->left == NULL || pw->left->color == BLACK){
+                if (pw->left->color == BLACK){
                    pw->right->color = BLACK;
 		   pw->color = RED;
 	           left_rotate(prb, pw);
-                   pw = px_parent->left; 
+                   pw = px->parent->left; 
                 }
-                // CASE 4 
-		pw->color = px_parent->color;
-                px_parent->color = BLACK;
-		if (pw->left)
-	            pw->left->color = BLACK;
-	        right_rotate(prb, px_parent);
+		pw->color = px->parent->color;
+                px->parent->color = BLACK;
+	        pw->left->color = BLACK;
+	        right_rotate(prb, px->parent);
 	        px = prb->root;
             }
         }
-    }// big while
+    }// while
     px->color = BLACK;
 }
 
-rbnode_t* _rb_delete(rbtree_t* prb, rbnode_t* pz)
-{
+rbnode_t* _rb_delete(rbtree_t* prb, rbnode_t* pz){
     rbnode_t* py;
     rbnode_t* px;
-    int is_left = 0;
-    if (pz->left == NULL || pz->right == NULL){
+    if (pz->left == RB_NIL(prb) || pz->right == RB_NIL(prb)){
 	py = pz;
     }else{
-	py = rbtree_successor(pz);
+	py = rbtree_successor(prb, pz);
     }
 
-    if (py->left != NULL){
+    if (py->left != RB_NIL(prb)){
 	px = py->left;
     }else{
 	px = py->right;
     }
-	
-    if (px != NULL)
-    	px->parent = py->parent;
+
+    px->parent = py->parent;
     
-    if (py->parent == NULL){
+    if (py->parent == RB_NIL(prb)){
 	prb->root = px;
     }else if (py == py->parent->left){
 	py->parent->left = px;
-	is_left = 1;
     }else{
 	py->parent->right = px;
-	is_left = 0;
     }
     
     if (py != pz){
@@ -408,18 +383,17 @@ rbnode_t* _rb_delete(rbtree_t* prb, rbnode_t* pz)
         py->kv = kv;
     }
     
-    if (py->color == BLACK && py->parent != NULL){
-	rb_delete_fixup(prb, px, py->parent, is_left);
+    if (py->color == BLACK){
+	rb_delete_fixup(prb, px);
     }
-    --prb->size;
+
     return py;
 }
 
-rbnode_t* rb_delete(rbtree_t* prb, int key)
-{
-    rbnode_t* pz = rb_search(prb->root, key);
-    if (pz)
+rbnode_t* rb_delete(rbtree_t* prb, int key){
+    rbnode_t* pz = rb_search(prb, prb->root, key);
+    if (pz != RB_NIL(prb))
 	return _rb_delete(prb, pz);
-    return pz;
+    return NULL;
 }
 

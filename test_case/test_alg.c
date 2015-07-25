@@ -172,6 +172,50 @@ void test_build_tree(void){
     print_tree(&tree, 48);
 }
 
+
+void test_rb_tree(void){
+    rbtree_t rbt;
+    init_rbtree(&rbt);
+    static const size_t ks = 20;
+    //int keys[] = {26, 17, 41};
+    int keys[] = {26, 17, 41, 14, 21, 30, 47, 10, 16, 19, 23, 28, 38, 7, 12, 15, 20, 35, 39, 3};
+    rbnode_t nodes[ks]; 
+    int i;
+    for (i=0; i<ks; ++i){
+	//rbnode_t* ptn = (rbnode_t*)malloc(sizeof(rbnode_t));
+        init_rbnode_kv(&rbt, &nodes[i], keys[i], 0);
+        //init_rbnode_kv(&rbt, &nodes[i], keys[i], (void*)0);
+        rb_insert(&rbt, &nodes[i]);
+    }
+     
+    char cmd[256];
+
+    printf(" input you cmd pls: ");
+    do{
+	scanf("%s", cmd);
+	if (strcmp(cmd, "p") == 0 ){
+	   printf("print the rb_tree\n");
+	   print_rb_tree(&rbt);
+        }else if (strcmp(cmd, "d") == 0){
+	   printf("key to delete : ");
+	   int k = -1;
+           scanf("%d", &k);
+	   rbnode_t* pz = rb_delete(&rbt, k);
+	   if (pz){
+		printf("delete the node with key %d \n", pz->kv.key);
+           }else{
+		printf("can not find the node with key %d \n", k);
+           }
+        }else if (strcmp(cmd, "i") == 0){
+	   
+        }	
+
+    }while(strcmp(cmd, "exit") != 0);
+
+    // clean up the tree
+}
+
+
 int suite_success_init(void){
     return 0;
 }
@@ -277,6 +321,12 @@ int main( int argc, char* argv[] ){
    && (NULL == CU_add_test(pSuite, "test_build_tree", test_build_tree))){
 	CU_cleanup_registry();
         return CU_get_error();
+   }
+
+   if (grep_case(argc, argv, "rb_tree")
+   && (NULL == CU_add_test(pSuite, "test_rb_tree", test_rb_tree))){
+	CU_cleanup_registry();
+	return CU_get_error();
    }
 
   CU_basic_set_mode(CU_BRM_VERBOSE);

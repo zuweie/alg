@@ -3,6 +3,7 @@
 
 #include "my_list.h"
 #include "my_tree.h"
+#include "my_rbtree.h"
 
 #define BOOLEAN int
 #define TRUE 1
@@ -15,4 +16,5 @@ void fill_linked_list_random(list_t* plist, size_t size);
 void print_linked_list(list_t* plist, BOOLEAN reverse);
 void cleanup_linked_list(list_t* plist);
 void print_tree(tree_t* pt, size_t width);
+void print_rb_tree(rbtree_t* prb);
 #endif

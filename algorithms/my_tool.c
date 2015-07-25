@@ -9,6 +9,7 @@
 #include "my_tree.h"
 #include "my_list.h"
 #include "my_tool.h"
+#include "my_rbtree.h"
 
 void fill_kv_array_random(kv_t kv_arr[], size_t size){
    srand(time(NULL));
@@ -174,7 +175,75 @@ void print_tree(tree_t* pt, size_t width){
 	pnode->kv.pdata = NULL;
      }
 }
-     
 
+int get_rb_node(rbtree_t* prb, rbnode_t* ptn, list_t* plist, int level, int* lc){
+
+    if (ptn != NULL){
+    	
+	node_t* pn = (node_t*) malloc (sizeof (node_t));
+        pn->kv.key = level;
+        pn->kv.pdata = (void*) ptn;
+	
+        insert_list_at_tail(plist, pn);
+
+	if (*lc < level) *lc = level;	
+
+        get_rb_node(prb, ptn->left, plist, level+1, lc);
+	get_rb_node(prb, ptn->right, plist, level+1, lc);
+
+    }
+    return 0;
+}
+
+char* get_color(rbnode_t* pn){
+    if (pn->color == BLACK){
+	return "b";
+    }else{
+	return "r";
+    }
+}
+
+char* get_side(rbnode_t* pn){
+   if (pn->parent && pn->parent->left == pn){
+	return "l";
+   }else if (pn->parent && pn->parent->right == pn){
+	return "r";
+   }else
+	return "o";
+}
+
+int print_rb_node(list_t* plist, int level){
+    node_t* pf;
+    int i;
+    printf("\n");
+    for (i=0; i<=level; ++i){
+        for (pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
+	     if (pf->kv.key == i){
+		rbnode_t* ptn = (rbnode_t*)(pf->kv.pdata);
+		printf("%d(p:%d,c:%s,s:%s) ", ptn->kv.key, ptn->parent?ptn->parent->kv.key:-1, get_color(ptn),get_side(ptn)); 
+             }
+        }
+	printf("\n");
+    }
+    printf("\n");
+}
+
+int clear_up_list(list_t* plist){
+    node_t* pn = NULL;
+    while(pop_list(plist, &pn)){
+	if (pn) free(pn);
+	pn = NULL;
+    } 
+    return 0;
+}
+
+void print_rb_tree(rbtree_t* prb){
+    list_t list;
+    init_list(&list);
+    int lc = -1;
+    get_rb_node(prb, prb->root, &list, 0, &lc);
+    print_rb_node(&list, lc);
+    clear_up_list(&list);
+}
 
 
