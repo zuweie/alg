@@ -7,7 +7,7 @@ objects       = $(subst .c,.o,$(sources))
 dependencies  = $(subst .c,.d,$(sources))
 
 
-project_dir   := /home/zuweie/WorkShop/code/Algorithms
+project_dir   := $(shell pwd)
 include_dirs  := $(project_dir)/algorithms
 sources_dirs  := $(project_dir)/algorithms
 testcase_dirs := $(project_dir)test_case
