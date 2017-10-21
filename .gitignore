@@ -1,3 +1,10 @@
 out/*
 *.o
 *.d
+algorithms/*.o
+algorithms/*.d
+out/*.d
+out/*.o
+test_case/*.o
+test_cast/*.d
+
