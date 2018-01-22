@@ -1,18 +1,19 @@
 #include <stdlib.h>
 
-#include "my_list.h"
+#include "_d_linked_list.h"
 
-int init_list(list_t* plist){
+extern int init_list(DLinkedList* plist){
    plist->size = 0;
    LIST_FIRST(plist) = LIST_HEAD(plist);
    LIST_LAST(plist)  = LIST_TAIL(plist);
+   return 0;
 }
 
-int search_list(list_t* plist, int key, node_t** pnode){
-    node_t* pf;
+extern int search_list(DLinkedList* plist, int key, ListNode** pnode){
+	ListNode* pf;
     *pnode = NULL; 
     for(pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
-        if (pf->kv.key == key){
+        if (pf->_entity.key == key){
 	   *pnode = pf;
            break;
 	}
@@ -21,9 +22,9 @@ int search_list(list_t* plist, int key, node_t** pnode){
 }
 
 // insert like head
-int insert_list_at_head(list_t* plist, node_t* pnode){
-    node_t* ph = LIST_HEAD(plist);
-    node_t* pf = LIST_FIRST(plist);
+extern int insert_list_at_head(DLinkedList* plist, ListNode* pnode){
+	ListNode* ph = LIST_HEAD(plist);
+	ListNode* pf = LIST_FIRST(plist);
 
     ph->next = pnode;
     pnode->next = pf;
@@ -33,9 +34,9 @@ int insert_list_at_head(list_t* plist, node_t* pnode){
     return ++(plist->size);
 }
 
-int insert_list_at_tail(list_t* plist, node_t* pnode){
-    node_t* pt = LIST_TAIL(plist);
-    node_t* pl = LIST_LAST(plist);
+extern int insert_list_at_tail(DLinkedList* plist, ListNode* pnode){
+	ListNode* pt = LIST_TAIL(plist);
+	ListNode* pl = LIST_LAST(plist);
 
     pt->prev = pnode;
     pnode->prev = pl;
@@ -45,9 +46,9 @@ int insert_list_at_tail(list_t* plist, node_t* pnode){
    return ++(plist->size);
 }
 
-int get_node(list_t* plist, int i, node_t** pnode){
+extern int get_node(DLinkedList* plist, int i, ListNode** pnode){
     *pnode = NULL;
-    node_t* pn;
+    ListNode* pn;
     int j;
     int hs = (plist->size) / 2;
     if (i <= hs)
@@ -67,23 +68,23 @@ int get_node(list_t* plist, int i, node_t** pnode){
     return 0;
 }
 
-int delete_list(list_t* plist, int key, node_t** pnode){
+extern int delete_list(DLinkedList* plist, int key, ListNode** pnode){
 
     search_list(plist, key, pnode);
 
     if (*pnode){
-	(*pnode)->prev->next = (*pnode)->next;
+    	(*pnode)->prev->next = (*pnode)->next;
         (*pnode)->next->prev = (*pnode)->prev;
-	return --(plist->size);
+        return --(plist->size);
     }else{
-	return -1;
+    	return -1;
     }
 }
 
-int pop_list(list_t* plist, node_t** pnode){
+extern int pop_list(DLinkedList* plist, ListNode** pnode){
      if (plist->size != 0){
-       node_t* pn = LIST_LAST(plist);
-       return delete_list(plist, pn->kv.key, pnode);
+    	 ListNode* pn = LIST_LAST(plist);
+       return delete_list(plist, pn->_entity.key, pnode);
      }else{
 	*pnode = NULL;
         return plist->size;

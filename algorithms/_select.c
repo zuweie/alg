@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "kv.h"
-#include "sort.h"
+#include "_entity.h"
+#include "_sort.h"
 
-int select_max_min(kv_t arr[], size_t size, kv_t** pmax, kv_t** pmin){
+extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmin){
 
     int i,j;
     if ((size % 2) == 0){
@@ -35,7 +35,7 @@ int select_max_min(kv_t arr[], size_t size, kv_t** pmax, kv_t** pmin){
     return 0;
 }
 
-int randomized_select_imax(kv_t arr[], int p, int r, int i, kv_t** pret){
+extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pret){
     if (p == r){
       *pret = &arr[p];
       return 0;
@@ -52,12 +52,12 @@ int randomized_select_imax(kv_t arr[], int p, int r, int i, kv_t** pret){
     // 否则调用递归，搜查后半部分。randomized(arr, q+1, r, i-k);
     // 这里为毛要 i-k呢？ 因为 i 在后半部分。前半部分的索引值要减去。 
     if (k == i){
-	*pret = &arr[q];
-	return 0;
+    	*pret = &arr[q];
+		return 0;
     }else if ( i < k)
-	randomized_select_imax(arr, p, q-1, i, pret);
+    	return randomized_select_imax(arr, p, q-1, i, pret);
     else
-	randomized_select_imax(arr, q+1, r, i - k, pret);
+    	return randomized_select_imax(arr, q+1, r, i - k, pret);
 }
 
 

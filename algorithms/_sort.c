@@ -1,18 +1,18 @@
 #include <stdio.h>
 
-#include "kv.h"
+#include "_entity.h"
 
 #define MAX 0x7fffffff
 
 #define SORT_DEBUG
 
-int insertion_sort(kv_t kv_arr[], size_t size) {
+extern int insertion_sort(Entity kv_arr[], size_t size) {
    int i, j; 
    for(j=1; j<size; ++j){
-      kv_t tmp = kv_arr[j];
+	   Entity tmp = kv_arr[j];
       i = j-1;
       while( i>=0 && kv_arr[i].key > tmp.key){
-	 kv_arr[i+1] = kv_arr[i];
+    	  kv_arr[i+1] = kv_arr[i];
          i = i-1; 
       }
       kv_arr[i+1] = tmp;
@@ -20,16 +20,17 @@ int insertion_sort(kv_t kv_arr[], size_t size) {
    return 0;
 }
 
-int merge_sort(kv_t kv_arr[], size_t s1, size_t s2){
+extern int merge_sort(Entity kv_arr[], size_t s1, size_t s2){
     if (s1 < s2){
-	size_t sm = (s1+s2)/2;
-	merge_sort(kv_arr, s1, sm);
+    	size_t sm = (s1+s2)/2;
+		merge_sort(kv_arr, s1, sm);
         merge_sort(kv_arr, sm+1, s2);
-	merge(kv_arr, s1, sm, s2);
+        merge(kv_arr, s1, sm, s2);
     }
+    return 0;
 }
 
-int merge(kv_t kv_arr[], size_t s1, size_t sm, size_t s2){
+extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2){
    
 #ifdef SORT_DEBUG
    printf("index : %d %d %d \n", (int)s1, (int)sm, (int)s2);
@@ -37,8 +38,8 @@ int merge(kv_t kv_arr[], size_t s1, size_t sm, size_t s2){
    size_t i,j, k;
    size_t l_sz = sm-s1+1;
    size_t r_sz = s2-sm;
-   kv_t lkv_arr[l_sz+1];
-   kv_t rkv_arr[r_sz+1];
+   Entity lkv_arr[l_sz+1];
+   Entity rkv_arr[r_sz+1];
    for(i=0; i<l_sz; ++i){
 	lkv_arr[i] = kv_arr[s1+i];
    }
@@ -87,13 +88,13 @@ int merge(kv_t kv_arr[], size_t s1, size_t sm, size_t s2){
    return 0;
 }
 
-int partition(kv_t arr[], int p, int r){
+extern int partition(Entity arr[], int p, int r){
 
     // 将最后一个做为标杆
     int key = arr[r].key;
     int i = p-1;
     int j;
-    kv_t tmp;
+    Entity tmp;
 
     // 将大于最后一个的甩在后面
     // 将小于最后一个的甩在前面。
@@ -103,7 +104,7 @@ int partition(kv_t arr[], int p, int r){
     for (j=p; j<=r-1; ++j){
 	if (arr[j].key <= key){
             if (i != j){
-		++i;
+            	++i;
 	        tmp = arr[i];
                 arr[i] = arr[j];
                 arr[j] = tmp; 
@@ -118,24 +119,25 @@ int partition(kv_t arr[], int p, int r){
     return i+1;
 }
 
-int randomized_partition(kv_t arr[], int p, int r){
+extern int randomized_partition(Entity arr[], int p, int r){
    srand(time(NULL));
    int dest = r - p + 1;
    int i = ( rand() % dest ) + p;
 
-   kv_t tmp = arr[p];
+   Entity tmp = arr[p];
    arr[p] = arr[i];
    arr[i] = tmp;
 
-   partition(arr, p, r);
+   return partition(arr, p, r);
 }
 
-int quick_sort(kv_t arr[], int p, int r, int (* partition_func)(kv_t arr[], int p, int r)){
+extern int quick_sort(Entity arr[], int p, int r, int (* partition_func)(Entity arr[], int p, int r)){
 
    if (p < r){
        int q = partition_func(arr, p, r);
        quick_sort(arr, p, q-1, partition_func);
        quick_sort(arr, q+1, r, partition_func);
    }
+   return 0;
 }
 

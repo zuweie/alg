@@ -1,5 +1,5 @@
 local_dir      := $(project_dir)/algorithms
-local_sources  := my_hash.c my_list.c my_select.c my_tool.c my_tree.c sort.c heap.c my_rbtree.c
+local_sources  := _hash.c _d_linked_list.c _select.c _tool.c _tree.c _sort.c _heap.c _rb_tree.c
 local_src      := $(addprefix $(local_dir)/, $(local_sources))
 local_obj      := $(subst .c, .o, $(local_src))
 local_ex_clean := $(local_dir)/*.*~

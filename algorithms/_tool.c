@@ -4,14 +4,14 @@
 #include <string.h>
 
 
-#include "kv.h"
-#include "heap.h"
-#include "my_tree.h"
-#include "my_list.h"
-#include "my_tool.h"
-#include "my_rbtree.h"
+#include "_entity.h"
+#include "_heap.h"
+#include "_tree.h"
+#include "_d_linked_list.h"
+#include "_tool.h"
+#include "_rb_tree.h"
 
-void fill_kv_array_random(kv_t kv_arr[], size_t size){
+void fill_kv_array_random(Entity kv_arr[], size_t size){
    srand(time(NULL));
    int i;
    for (i=0; i<size; ++i){
@@ -20,16 +20,16 @@ void fill_kv_array_random(kv_t kv_arr[], size_t size){
    }
 }
 
-void print_kv_key(kv_t kv_arr[], size_t size){
+void print_kv_key(Entity kv_arr[], size_t size){
    int i;
-   printf("\nkey: ");
+   printf("\n key: ");
    for (i=0; i<size; ++i){
       printf("%d ", kv_arr[i].key);
    }
    printf("\n");
 }
 
-void print_heap(kv_t kv_arr[], size_t heap_sz){
+void print_heap(Entity kv_arr[], size_t heap_sz){
 
    int h = log2(heap_sz);
    int hi, lb, li, lsz; 
@@ -47,39 +47,39 @@ void print_heap(kv_t kv_arr[], size_t heap_sz){
    }
 }
 
-void fill_linked_list_random(list_t *plist, size_t size){
+void fill_linked_list_random(DLinkedList *plist, size_t size){
    int i;
    srand(time(NULL));
    for (i=0; i<size; ++i){
-	node_t* node = (node_t*)malloc(sizeof(node_t));
-	node->kv.key = rand() % 1000;
-	node->kv.pdata = NULL;
+	ListNode* node = (ListNode*)malloc(sizeof(ListNode));
+	node->_entity.key = rand() % 1000;
+	node->_entity.pdata = NULL;
 	insert_list_at_head(plist, node);
    }
 }
 
-void cleanup_linked_list(list_t* plist){
-   node_t *pf = LIST_FIRST(plist);
+void cleanup_linked_list(DLinkedList* plist){
+	ListNode *pf = LIST_FIRST(plist);
    for(pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
 	free(pf);
    }
 }
-void print_linked_list(list_t *plist, BOOLEAN reverse){
 
-    node_t *pf;
+void print_linked_list(DLinkedList *plist, BOOLEAN reverse){
+
+	ListNode *pf;
     printf("\n");
     if(reverse){
 	printf("print reverse : \n");
      	for (pf = LIST_LAST(plist); pf != LIST_HEAD(plist); pf = pf->prev){
-	   printf("%d ", pf->kv.key);
+	   printf("%d ", pf->_entity.key);
         }
     }else{
 	for (pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
-	   printf("%d ", pf->kv.key);
+	   printf("%d ", pf->_entity.key);
         }
     }
 }
-
 
 void print_c(size_t n, char c){
      int i=0; 
@@ -88,44 +88,44 @@ void print_c(size_t n, char c){
      }
 }
 
-void get_tree_node(tnode_t* pn, list_t* plist, int level){
+void get_tree_node(TreeNode* pn, DLinkedList* plist, int level){
 
     if (pn != NULL){
 
 	int nextlevel = level+1;
-	 node_t* pnode = NULL;
-	 list_t* plevel = NULL;
+	 ListNode* pnode = NULL;
+	 DLinkedList* plevel = NULL;
 
 	 search_list(plist, level, &pnode);
 	
-         if (pnode == NULL){
+     if (pnode == NULL){
             // 新建一个节点
-            pnode = (node_t*)malloc(sizeof(node_t));
+            pnode = (ListNode*)malloc(sizeof(ListNode));
 	    // 在此建造一条新的list作为新level的容器。
-            plevel = (list_t*)malloc(sizeof(list_t));
+            plevel = (DLinkedList*)malloc(sizeof(DLinkedList));
 	    
  	    //printf("create and insert new level list (%d)\n", level);
 	    init_list(plevel);
 
-	    pnode->kv.key = level;
-            pnode->kv.pdata = (void*)plevel;
+	    pnode->_entity.key = level;
+            pnode->_entity.pdata = (void*)plevel;
 	    insert_list_at_tail(plist, pnode);
-         }else{
-	   plevel = (list_t*)pnode->kv.pdata;
-         }
+    }else{
+	   plevel = (DLinkedList*)pnode->_entity.pdata;
+   }
 
          // 将树的节点放入相应的level的list中
-         node_t* ptt = (node_t*)malloc(sizeof(node_t));
-	 ptt->kv.key = (long)pn;
-	 ptt->kv.pdata = (void*)pn;
-         insert_list_at_tail(plevel, ptt); 
+     ListNode* ptt = (ListNode*)malloc(sizeof(ListNode));
+	 ptt->_entity.key = (long)pn;
+	 ptt->_entity.pdata = (void*)pn;
+     insert_list_at_tail(plevel, ptt);
 
 	 get_tree_node(pn->left, plist, nextlevel);
 	 get_tree_node(pn->right, plist, nextlevel);
     }
 }
 
-char* is_what(tnode_t* pn){
+char* is_what(TreeNode* pn){
 	
    if (pn != NULL && pn->parent == NULL){
 	return "root";
@@ -138,23 +138,23 @@ char* is_what(tnode_t* pn){
    }
 }
 
-void print_tree(tree_t* pt, size_t width){
+void print_tree(Tree* pt, size_t width){
 
-     list_t llist;
+     DLinkedList llist;
      init_list(&llist);
 
      get_tree_node(pt->root, &llist, 0);
 
      // print the tree
-     node_t *pnode = NULL;
+     ListNode *pnode = NULL;
      for (pnode = LIST_FIRST(&llist); pnode != LIST_TAIL(&llist); pnode=pnode->next){
-	  list_t* plevel = (list_t*)pnode->kv.pdata;
-	  int level      = pnode->kv.key;
+	  DLinkedList* plevel = (DLinkedList*)pnode->_entity.pdata;
+	  int level      = pnode->_entity.key;
 
-	  node_t* pn = NULL;
+	  ListNode* pn = NULL;
 	  for (pn = LIST_FIRST(plevel); pn != LIST_TAIL(plevel); pn = pn->next){
-		tnode_t* pt = (tnode_t*) pn->kv.pdata;
-		printf(" %d(l:%d p:%d %s) ", pt->kv.key, level, pt->parent !=NULL?pt->parent->kv.key:0, is_what(pt));
+		TreeNode* pt = (TreeNode*) pn->_entity.pdata;
+		printf(" %d(l:%d p:%d %s) ", pt->_entity.key, level, pt->parent !=NULL?pt->parent->_entity.key:0, is_what(pt));
           }
 	  printf("\n");
      }
@@ -162,40 +162,40 @@ void print_tree(tree_t* pt, size_t width){
      // clean up all the malloc data
      
      for (pnode = LIST_FIRST(&llist); pnode != LIST_TAIL(&llist); pnode=pnode->next){
-	list_t* plevel = (list_t*)pnode->kv.pdata;
-        int level      = pnode->kv.key;
+	DLinkedList* plevel = (DLinkedList*)pnode->_entity.pdata;
+        int level      = pnode->_entity.key;
         //printf("clean up %d level data\n", level);
-	node_t* pn = NULL;
+	ListNode* pn = NULL;
 	
 	while(pop_list(plevel, &pn)){
 	   
 	   free(pn);
         }
 	free(plevel);
-	pnode->kv.pdata = NULL;
+	pnode->_entity.pdata = NULL;
      }
 }
 
-int get_rb_node(rbtree_t* prb, rbnode_t* ptn, list_t* plist, int level, int* lc){
+int get_rb_node(RBTree* prb, RBTreeNode* ptn, DLinkedList* plist, int level, int* lc){
 
     if (ptn != NULL){
     	
-	node_t* pn = (node_t*) malloc (sizeof (node_t));
-        pn->kv.key = level;
-        pn->kv.pdata = (void*) ptn;
+    	ListNode* pn = (ListNode*) malloc (sizeof (ListNode));
+        pn->_entity.key = level;
+        pn->_entity.pdata = (void*) ptn;
 	
         insert_list_at_tail(plist, pn);
 
 	if (*lc < level) *lc = level;	
 
         get_rb_node(prb, ptn->left, plist, level+1, lc);
-	get_rb_node(prb, ptn->right, plist, level+1, lc);
+        get_rb_node(prb, ptn->right, plist, level+1, lc);
 
     }
     return 0;
 }
 
-char* get_color(rbnode_t* pn){
+char* get_color(RBTreeNode* pn){
     if (pn->color == BLACK){
 	return "b";
     }else{
@@ -203,7 +203,7 @@ char* get_color(rbnode_t* pn){
     }
 }
 
-char* get_side(rbnode_t* pn){
+char* get_side(RBTreeNode* pn){
    if (pn->parent && pn->parent->left == pn){
 	return "l";
    }else if (pn->parent && pn->parent->right == pn){
@@ -212,24 +212,25 @@ char* get_side(rbnode_t* pn){
 	return "o";
 }
 
-int print_rb_node(list_t* plist, int level){
-    node_t* pf;
+int print_rb_node(DLinkedList* plist, int level){
+    ListNode* pf;
     int i;
     printf("\n");
     for (i=0; i<=level; ++i){
         for (pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
-	     if (pf->kv.key == i){
-		rbnode_t* ptn = (rbnode_t*)(pf->kv.pdata);
-		printf("%d(p:%d,c:%s,s:%s) ", ptn->kv.key, ptn->parent?ptn->parent->kv.key:-1, get_color(ptn),get_side(ptn)); 
+	     if (pf->_entity.key == i){
+	    	 	 RBTreeNode* ptn = (RBTreeNode*)(pf->_entity.pdata);
+	    	 	 printf("%d(p:%d,c:%s,s:%s) ", ptn->_entity.key, ptn->parent?ptn->parent->_entity.key:-1, get_color(ptn),get_side(ptn));
              }
         }
 	printf("\n");
     }
     printf("\n");
+    return 0;
 }
 
-int clear_up_list(list_t* plist){
-    node_t* pn = NULL;
+int clear_up_list(DLinkedList* plist){
+    ListNode* pn = NULL;
     while(pop_list(plist, &pn)){
 	if (pn) free(pn);
 	pn = NULL;
@@ -237,8 +238,8 @@ int clear_up_list(list_t* plist){
     return 0;
 }
 
-void print_rb_tree(rbtree_t* prb){
-    list_t list;
+void print_rb_tree(RBTree* prb){
+    DLinkedList list;
     init_list(&list);
     int lc = -1;
     get_rb_node(prb, prb->root, &list, 0, &lc);

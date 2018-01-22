@@ -5,23 +5,23 @@
 
 #include <CUnit/Basic.h>
 
-#include "kv.h"
-#include "sort.h"
-#include "heap.h"
-#include "my_tool.h"
-#include "my_select.h"
-#include "my_list.h"
-#include "my_hash.h"
-#include "my_tree.h"
+#include "_entity.h"
+#include "_sort.h"
+#include "_heap.h"
+#include "_tool.h"
+#include "_select.h"
+#include "_d_linked_list.h"
+#include "_hash.h"
+#include "_tree.h"
 
-kv_t* pkv_arr;
+Entity* pkv_arr;
 size_t arr_size;
 
 void test_insertion_sort(void){
    // TODO : make a kv array
    int i;
    const size_t SIZE = 10;
-   kv_t kv_arr[SIZE];
+   Entity kv_arr[SIZE];
    fill_kv_array_random(kv_arr, SIZE);
    
    printf("sort before:\n");
@@ -41,7 +41,7 @@ void test_insertion_sort(void){
 void test_merge_sort(void){
   int i;
   const size_t SIZE = 6;
-  kv_t kv_arr[SIZE];
+  Entity kv_arr[SIZE];
   fill_kv_array_random(kv_arr, SIZE);
   print_kv_key(kv_arr, SIZE);
   merge_sort(kv_arr, 0, SIZE-1);
@@ -54,7 +54,7 @@ void test_merge_sort(void){
 void test_build_heap(void) {
    int i;
    const size_t SIZE = 100;
-   kv_t kv_arr[SIZE];
+   Entity kv_arr[SIZE];
    fill_kv_array_random(kv_arr, SIZE);
    //print_kv_key(kv_arr, SIZE);
    print_heap(kv_arr, SIZE);
@@ -65,7 +65,7 @@ void test_build_heap(void) {
 
 void test_heap_sort(void) {
    const size_t SIZE = 50;
-   kv_t kv_arr[SIZE];
+   Entity kv_arr[SIZE];
    
    fill_kv_array_random(kv_arr, SIZE);
    print_kv_key(kv_arr, SIZE);
@@ -106,7 +106,7 @@ void test_select_max_min(void){
   print_kv_key(pkv_arr, arr_size);
   quick_sort(pkv_arr, 0, arr_size-1, randomized_partition);
   print_kv_key(pkv_arr, arr_size);
-  kv_t *pmax, *pmin;
+  Entity *pmax, *pmin;
   select_max_min(pkv_arr, arr_size, &pmax, &pmin);
   printf("max : %d, min : %d \n", pmax->key, pmin->key);
 }
@@ -115,7 +115,7 @@ void test_randomized_select_imax(void){
   
    print_kv_key(pkv_arr, arr_size);
   
-   kv_t *p;
+   Entity *p;
    randomized_select_imax(pkv_arr, 0, arr_size-1, 4, &p);
 
    printf("imax : %d\n", p->key);
@@ -126,7 +126,7 @@ void test_randomized_select_imax(void){
 }
 
 void test_linked_list(void) {
-   list_t list;
+   DLinkedList list;
    init_list(&list);
    
    fill_linked_list_random(&list, arr_size);
@@ -134,18 +134,18 @@ void test_linked_list(void) {
    print_linked_list(&list, FALSE);
    print_linked_list(&list, TRUE);
 
-   node_t* pn;
+   ListNode* pn;
    get_node(&list, 4, &pn);
-   printf("\nwe get 4th node : %d \n", pn->kv.key);
+   printf("\nwe get 4th node : %d \n", pn->_entity.key);
  
    get_node(&list, 6, &pn);
-   printf("we get 6th node : %d \n", pn->kv.key);
+   printf("we get 6th node : %d \n", pn->_entity.key);
 
-   int k = pn->kv.key;
+   int k = pn->_entity.key;
 
    delete_list(&list, k, &pn);
 
-   printf("delete 6th node : %d \n", pn->kv.key);
+   printf("delete 6th node : %d \n", pn->_entity.key);
    print_linked_list(&list, FALSE);
    free(pn);
    cleanup_linked_list(&list);
@@ -158,9 +158,9 @@ void test_hash_key(void){
 
 void test_build_tree(void){
 
-    tree_t tree;
+    Tree tree;
     init_tree(&tree);
-    tnode_t tnode[arr_size];
+    TreeNode tnode[arr_size];
     print_kv_key(pkv_arr, arr_size);
     int i;
     for (i=0; i<arr_size; ++i){
@@ -174,16 +174,16 @@ void test_build_tree(void){
 
 
 void test_rb_tree(void){
-    rbtree_t rbt;
+    RBTree rbt;
     init_rbtree(&rbt);
     static const size_t ks = 20;
     //int keys[] = {26, 17, 41};
     int keys[] = {26, 17, 41, 14, 21, 30, 47, 10, 16, 19, 23, 28, 38, 7, 12, 15, 20, 35, 39, 3};
-    rbnode_t nodes[ks]; 
+    RBTreeNode nodes[ks];
     int i;
     for (i=0; i<ks; ++i){
 	//rbnode_t* ptn = (rbnode_t*)malloc(sizeof(rbnode_t));
-        init_rbnode_kv(&rbt, &nodes[i], keys[i], 0);
+        init_rbnode_entity(&rbt, &nodes[i], keys[i], 0);
         //init_rbnode_kv(&rbt, &nodes[i], keys[i], (void*)0);
         rb_insert(&rbt, &nodes[i]);
     }
@@ -200,9 +200,9 @@ void test_rb_tree(void){
 	   printf("key to delete : ");
 	   int k = -1;
            scanf("%d", &k);
-	   rbnode_t* pz = rb_delete(&rbt, k);
+	   RBTreeNode* pz = rb_delete(&rbt, k);
 	   if (pz){
-		printf("delete the node with key %d \n", pz->kv.key);
+		printf("delete the node with key %d \n", pz->_entity.key);
            }else{
 		printf("can not find the node with key %d \n", k);
            }
@@ -241,7 +241,7 @@ int main( int argc, char* argv[] ){
    }   
 
    //弄些实验数据
-   pkv_arr = malloc(sizeof(kv_t) * arr_size);
+   pkv_arr = malloc(sizeof(Entity) * arr_size);
    fill_kv_array_random(pkv_arr, arr_size);
     
    CU_pSuite pSuite = NULL;
