@@ -143,7 +143,7 @@ void test_linked_list(void) {
 
    int k = pn->_entity.key;
 
-   delete_list(&list, k, &pn);
+   delete_list_by_key(&list, k, &pn);
 
    printf("delete 6th node : %d \n", pn->_entity.key);
    print_linked_list(&list, FALSE);
@@ -166,7 +166,7 @@ void test_build_tree(void){
     for (i=0; i<arr_size; ++i){
 	pkv_arr[i];
         init_tnode(&tnode[i], pkv_arr[i]);
-	tree_insert(&tree, &tnode[i]);
+	    tree_insert(&tree, &tnode[i]);
     }
 
     print_tree(&tree, 48);

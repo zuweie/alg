@@ -8,11 +8,11 @@ extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmi
     if ((size % 2) == 0){
        // 偶数
        if (arr[0].key >= arr[1].key){
-	  *pmax = &arr[0];
-	  *pmin = &arr[1];
+	        *pmax = &arr[0];
+	        *pmin = &arr[1];
        }else{
-	  *pmax = &arr[1];
-	  *pmin = &arr[0];
+	        *pmax = &arr[1];
+	        *pmin = &arr[0];
        }
        i=2;
     }else{
@@ -23,12 +23,12 @@ extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmi
     }
  
     for (; i<size; i+=2){
-	if (arr[i].key < arr[i+1].key){
-	   *pmin = (arr[i].key < (*pmin)->key) ? &arr[i] : *pmin;
+	    if (arr[i].key < arr[i+1].key){
+	        *pmin = (arr[i].key < (*pmin)->key) ? &arr[i] : *pmin;
            *pmax = (arr[i+1].key > (*pmax)->key) ? &arr[i+1] : *pmax;
         }else{
-	   *pmin = (arr[i+1].key < (*pmin)->key) ? &arr[i+1] : *pmin;
-	   *pmax = (arr[i].key > (*pmax)->key) ? &arr[i] : *pmax;
+	        *pmin = (arr[i+1].key < (*pmin)->key) ? &arr[i+1] : *pmin;
+	        *pmax = (arr[i].key > (*pmax)->key) ? &arr[i] : *pmax;
         }
     }
     

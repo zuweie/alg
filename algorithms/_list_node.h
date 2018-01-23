@@ -5,7 +5,7 @@
 
 typedef struct _ListNode {
 
-  Entity _entity;
+  Entity*  _entity;
   struct _ListNode* prev;
   struct _ListNode* next;
 

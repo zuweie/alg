@@ -51,7 +51,7 @@ extern int heap_sort(Entity arr[], size_t size){
     	tmp = arr[0];
         arr[0] = arr[i];
         arr[i] = tmp;
-	max_heapify(arr, 0, --heap_sz);
+	    max_heapify(arr, 0, --heap_sz);
     }
     return 0;
 }
