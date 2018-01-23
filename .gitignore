@@ -7,4 +7,8 @@ out/*.d
 out/*.o
 test_case/*.o
 test_cast/*.d
+.cproject
+.project
+.settings/
+
 
