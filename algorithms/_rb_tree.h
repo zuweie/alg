@@ -25,9 +25,7 @@ typedef struct _RBTree {
 
 extern int init_rbtree(RBTree* pt);
 
-extern int init_rbnode(RBTreeNode* pnode, Entity data);
-
-extern int init_rbnode_entity(RBTree* prb, RBTreeNode* pnode, int key, void* v);
+extern RBTreeNode* create_rbnode( Entity data);
 
 extern RBTreeNode* rbtree_minimum (RBTreeNode* pn);
 
@@ -41,16 +39,14 @@ extern int left_rotate(RBTree* prb, RBTreeNode* px);
 
 extern int right_rotate(RBTree* prb, RBTreeNode* px);
 
-extern RBTreeNode* rb_search(RBTreeNode* pt, int key);
+extern RBTreeNode* rb_search(RBTreeNode* pt, void* to_match, Entity** entity);
 
 extern int rb_insert_fixup(RBTree* prb, RBTreeNode* pz);
 
-extern int rb_insert(RBTree* prb, RBTreeNode* pz);
+extern int rb_insert(RBTree* prb, Entity e);
 
 extern int rb_delete_fixup(RBTree* prb, RBTreeNode* px, RBTreeNode* px_parent, int is_left);
 
-extern RBTreeNode* _rb_delete(RBTree* prb, RBTreeNode* pz);
-
-extern RBTreeNode* rb_delete(RBTree* prb, int key);
+extern int rb_delete(RBTree* prb, void* to_match, Entity *entity);
 
 #endif

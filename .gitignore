@@ -10,5 +10,4 @@ test_cast/*.d
 .cproject
 .project
 .settings/
-
-
+.vscode/

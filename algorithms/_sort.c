@@ -11,7 +11,7 @@ extern int insertion_sort(Entity kv_arr[], size_t size) {
    for(j=1; j<size; ++j){
 	   Entity tmp = kv_arr[j];
       i = j-1;
-      while( i>=0 && kv_arr[i].key > tmp.key){
+      while( i>=0 && kv_arr[i].compare(&kv_arr[i], &tmp) > 0){
     	  kv_arr[i+1] = kv_arr[i];
          i = i-1; 
       }

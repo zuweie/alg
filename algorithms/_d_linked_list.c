@@ -8,103 +8,91 @@ extern int dlist_init(DLinkedList* plist){
    return 0;
 }
 
-extern Entity* dlist_search(DLinkedList* plist, int key){
-	ListNode* pf;
+// 再头部添加
+extern int dlist_put(DLinkedList* plist, Entity e) 
+{
+    ListNode* pnode = (ListNode*) malloc(sizeof(ListNode));
+    pnode->_entity = e;
+    
+    ListNode* ph = LIST_HEAD(plist);
+    ListNode* pf = LIST_FIRST(plist);
+
+    ph->next = pnode;
+    pnode->next = pf;
+    
+    pf->prev = pnode;
+    pnode->prev = ph;
+    return ++(plist->size);
+}
+
+// 在尾部添加
+extern int dlist_push(DLinkedList* plist, Entity e)
+{
+    ListNode* pnode = (ListNode*) malloc(sizeof(ListNode));
+    pnode->_entity = e;
+
+    ListNode* pt = LIST_TAIL(plist);
+    ListNode* pl = LIST_LAST(plist);
+
+    pt->prev = pnode;
+    pnode->prev = pl;
+
+   pl->next = pnode;
+   pnode->next = pt;
+   return ++(plist->size);
+}
+
+extern ListNode* dlist_find(DLinkedList* plist, void* to_match, Entity** _entity)
+{
+    ListNode* pf;
+    if (_entity)
+        *_entity = NULL;
+    int i=0;
+
     for(pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
-        if (pf->_entity->key == key){
-	        return pf->_entity;
+        if (pf->_entity.compare(&(pf->_entity), to_match) == 0){
+            if (_entity)
+                *_entity =  &(pf->_entity);
+            return pf;
 	    }
     }
     return NULL;
 }
 
-// insert like head
-extern int dlist_insert_at_head(DLinkedList* plist, Entity* entity){
-
-	ListNode* phead = LIST_HEAD(plist);
-	ListNode* pfirst = LIST_FIRST(plist);
-
-    ListNode* pnode = (ListNode*)malloc(sizeof(ListNode));
-    pnode->_entity = entity;
+extern int dlist_remove(DLinkedList* plist, void* to_match, Entity* _entity)
+{
+    ListNode* pf = dlist_find(plist, to_match, NULL);
     
-    phead->next = pnode;
-    pnode->next = pfirst;
-    
-    pfirst->prev = pnode;
-    pnode->prev = phead;
-
-    return ++(plist->size);
-}
-
-extern int dlist_insert_at_tail(DLinkedList* plist, Entity* entity){
-
-	ListNode* ptail = LIST_TAIL(plist);
-	ListNode* plast = LIST_LAST(plist);
-
-    ListNode* pnode = (ListNode*)malloc(sizeof(ListNode));
-    pnode->_entity = entity;
-
-    ptail->prev = pnode;
-    pnode->prev = plast;
-
-    plast->next = pnode;
-    pnode->next = ptail;
-   
-    return ++(plist->size);
-}
-
-extern Entity* get_at (DLinkedList* plist, int i){
-
-    ListNode* pn;
-    int j;
-    int middle = (plist->size) / 2;
-    if (i <= middle){
-    // 从头开始找起
-	    for (pn = LIST_FIRST(plist), j=0; 
-	        pn != LIST_TAIL(plist), j != i; 
-	        pn = pn->next, ++j);
-    }else{
-        // 从尾部开始找起
-	    for (pn = LIST_LAST(plist), j=plist->size-1;
-	        pn != LIST_HEAD(plist), j != i;
-	        pn = pn->prev, --j);
-    }
-
-    if (j == i)
-        return pn->_entity;
-    return NULL;
-}
-
-extern Entity* dlist_remove(DLinkedList* plist, int key){
-
     /*
-    if (*pnode){
-    	(*pnode)->prev->next = (*pnode)->next;
-        (*pnode)->next->prev = (*pnode)->prev;
-        return --(plist->size);
-    }else{
-    	return -1;
+    for (pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
+        if (pf->_entity.compare(&(pf->_entity), to_match) == 0) break;
     }
     */
-}
 
-extern int delete_list(DLinkedList* plist, ListNode* pnode) 
-{
-    if (LIST_SIZE(plist)){
-        pnode->prev->next = pnode->next;
-        pnode->next->prev = pnode->prev;
-        return --(plist->size);
+    if (pf) {
+        pf->prev->next = pf->next;
+        pf->next->prev = pf->prev;
+        if (_entity) {
+            *_entity = pf->_entity;
+        }
+        free(pf);
+        --(plist->size);
     }
+    return plist->size;
 }
 
-extern int pop_list(DLinkedList* plist, ListNode** pnode){
-     if (plist->size != 0){
-    	 ListNode* pn = LIST_LAST(plist);
-         //return delete_list(plist, pn->_entity.key, pnode);
-         return delete_list(plist, pn);
-     }else{
-	    *pnode = NULL;
-        return plist->size;
-     }
+extern int dl_remove_all(DLinkedList* plist)
+{
+    ListNode* pf = LIST_FIRST(plist);
+    while(pf != LIST_TAIL(plist)){
+        pf->prev->next = pf->next;
+        pf->next->prev = pf->prev;
+        pf->_entity.cleanup && pf->_entity.cleanup(&(pf->_entity));
+        // fee node;
+        free(pf);
+        pf = LIST_FIRST(plist);
+    }
+    plist->size = 0;
+    return 0;
 }
 

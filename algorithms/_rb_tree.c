@@ -10,23 +10,14 @@ extern int init_rbtree(RBTree* pt)
    return 0;
 }
 
-extern int init_rbnode(RBTreeNode* pnode, Entity data)
+extern RBTreeNode* create_rbnode(Entity e)
 {
-   pnode->parent = NULL;
-   pnode->left   = NULL;
-   pnode->right  = NULL;
-   pnode->_entity     = data;
-   return 0;
-}
-
-extern int init_rbnode_entity(RBTree* prb, RBTreeNode* pnode, int key, void* v)
-{
-   pnode->parent = NULL;
-   pnode->left   = NULL;
-   pnode->right  = NULL;
-   pnode->_entity.key = key,
-   pnode->_entity.pdata = v;
-   return 0;
+    RBTreeNode* pnode = (RBTreeNode*) malloc(sizeof(RBTreeNode*));
+    pnode->parent   = NULL;
+    pnode->left     = NULL;
+    pnode->right    = NULL;
+    pnode->_entity  = e;
+    return ;
 }
 
 extern RBTreeNode* rbtree_minimum (RBTreeNode* pn)
@@ -132,16 +123,18 @@ extern int right_rotate(RBTree* prb, RBTreeNode* px)
    return 0;
 }
 
-extern RBTreeNode* rb_search(RBTreeNode* pt, int key)
+extern RBTreeNode* rb_search(RBTreeNode* pt, void* to_match, Entity** entity)
 {
-    if (pt == NULL || pt->_entity.key == key){
+    if (pt == NULL || pt->_entity.compare(&(pt->_entity), to_match) == 0 ){
+        if (pt && entity){
+            *entity = &(pt->_entity);
+        }
         return pt;
     }
-
-    if (key < pt->_entity.key){
-    	return rb_search(pt->left, key);
+    if (pt->_entity.compare(&(pt->_entity), to_match) > 0){
+        return rb_search(pt->left, to_match, entity);
     }else{
-    	return rb_search(pt->right, key);
+    	return rb_search(pt->right, to_match, entity);
     }
 }
 
@@ -224,14 +217,15 @@ extern int rb_insert_fixup(RBTree* prb, RBTreeNode* pz)
     return 0;
 }
 
-extern int rb_insert(RBTree* prb, RBTreeNode* pz)
+extern int rb_insert(RBTree* prb, Entity e)
 {
 	RBTreeNode* py = NULL;
 	RBTreeNode* px = prb->root;
-    
+    RBTreeNode* pz = create_tnode(e);
+
     while(px != NULL){
         py = px;
-        if (pz->_entity.key < px->_entity.key){
+        if (pz->_entity.compare(&(pz->_entity), &(px->_entity)) < 0){
         	px = px->left;
         }else{
         	px = px->right;
@@ -242,7 +236,7 @@ extern int rb_insert(RBTree* prb, RBTreeNode* pz)
 
     if (py == NULL){
     	prb->root = pz;
-    }else if (pz->_entity.key < py->_entity.key){
+    }else if (pz->_entity.compare(&(pz->_entity), &(py->_entity)) < 0){
     	py->left = pz;
     }else{
         py->right = pz;
@@ -414,15 +408,20 @@ extern RBTreeNode* _rb_delete(RBTree* prb, RBTreeNode* pz)
     }
 
     --prb->size;
-
     return py;
 }
 
-extern RBTreeNode* rb_delete(RBTree* prb, int key)
+extern int rb_delete(RBTree* prb, void* to_match, Entity *entity)
 {
-	RBTreeNode* pz = rb_search(prb->root, key);
-    if (pz)
-    	return _rb_delete(prb, pz);
-    return pz;
+	RBTreeNode* pz = rb_search(prb->root, to_match, NULL);
+    if (pz){
+        RBTreeNode* pnd = _rb_delete(prb, pz);
+        //pnd->_entity.cleanup && pnd->_entity.cleanup();
+        if (entity){
+            *entity = pnd->_entity;
+        }
+        free(pnd);
+    }
+    return prb->size;
 }
 
