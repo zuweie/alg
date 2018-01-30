@@ -6,40 +6,39 @@
 
 #define SORT_DEBUG
 
-extern int insertion_sort(Entity kv_arr[], size_t size) {
+extern int insertion_sort(Entity kv_arr[], size_t size, ecompare compare) {
+   
    int i, j; 
    for(j=1; j<size; ++j){
 	   Entity tmp = kv_arr[j];
       i = j-1;
-      while( i>=0 && kv_arr[i].compare(&kv_arr[i], &tmp) > 0){
+      while( i>=0 && compare(&kv_arr[i], &tmp) == 1){
     	  kv_arr[i+1] = kv_arr[i];
-         i = i-1; 
+          i = i-1; 
       }
       kv_arr[i+1] = tmp;
    }
    return 0;
 }
 
-extern int merge_sort(Entity kv_arr[], size_t s1, size_t s2){
+extern int merge_sort(Entity kv_arr[], size_t s1, size_t s2, ecompare compare){
     if (s1 < s2){
     	size_t sm = (s1+s2)/2;
-		merge_sort(kv_arr, s1, sm);
-        merge_sort(kv_arr, sm+1, s2);
-        merge(kv_arr, s1, sm, s2);
+		merge_sort(kv_arr, s1, sm, compare);
+        merge_sort(kv_arr, sm+1, s2, compare);
+        merge(kv_arr, s1, sm, s2, compare);
     }
     return 0;
 }
 
-extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2){
-   
-#ifdef SORT_DEBUG
-   printf("index : %d %d %d \n", (int)s1, (int)sm, (int)s2);
-#endif 
+extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2, ecompare compare)
+{ 
    size_t i,j, k;
    size_t l_sz = sm-s1+1;
    size_t r_sz = s2-sm;
    Entity lkv_arr[l_sz+1];
    Entity rkv_arr[r_sz+1];
+
    for(i=0; i<l_sz; ++i){
 	lkv_arr[i] = kv_arr[s1+i];
    }
@@ -48,28 +47,11 @@ extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2){
         rkv_arr[j] = kv_arr[sm+1+j];
    }
 
-#ifdef SORT_DEBUG
-   printf("原来的数组 : ");
-   for(i=0; i<s2-s1+1; i++){
-	printf("%d ", kv_arr[s1+i].key);
-   }
-   printf("\n");
-   printf("分后左数组 : ");
-   for(i=0; i<l_sz; ++i){
-	printf("%d ", lkv_arr[i].key);
-   }
-   printf("分组右数组 : ");
-   for(j=0; j<r_sz; ++j){
-	printf("%d ", rkv_arr[j].key);
-   }
-   printf("\n");
-#endif
-
-   lkv_arr[l_sz].key = MAX;
-   rkv_arr[r_sz].key = MAX;
+   lkv_arr[l_sz] = i2e(MAX);
+   rkv_arr[r_sz] = i2e(MAX);
 
    for (i=0, j=0, k=0; k<(s2-s1+1); ++k){
-	if (lkv_arr[i].key < rkv_arr[j].key){
+    if (compare(&lkv_arr[i], &rkv_arr[j]) == -1){
 	   kv_arr[s1+k] = lkv_arr[i];
 	   i++;
 	}else{
@@ -77,21 +59,14 @@ extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2){
 	   j++;
 	}
    }
-
-#ifdef SORT_DEBUG
-   printf("合拼后数组 : ");
-   for(i=0; i<s2-s1+1; i++){
-	printf("%d ", kv_arr[s1+i].key);
-   }
-   printf("\n\n");
-#endif
    return 0;
 }
 
-extern int partition(Entity arr[], int p, int r){
+extern int partition(Entity arr[], int p, int r, ecompare compare){
 
     // 将最后一个做为标杆
-    int key = arr[r].key;
+    //int key = arr[r].key;
+    Entity er = arr[r];
     int i = p-1;
     int j;
     Entity tmp;
@@ -102,15 +77,15 @@ extern int partition(Entity arr[], int p, int r){
     // 这就完成了将一个部分序列分开两部分了。
 
     for (j=p; j<=r-1; ++j){
-	if (arr[j].key <= key){
+        if (compare(&arr[j], &er) <= 0 ){
             if (i != j){
             	++i;
-	        tmp = arr[i];
+	            tmp = arr[i];
                 arr[i] = arr[j];
                 arr[j] = tmp; 
-	    }else{
-	        ++i;
-	    }    
+	        }else{
+	            ++i;
+	        }    
         }
     }
     tmp = arr[i+1];
@@ -119,7 +94,7 @@ extern int partition(Entity arr[], int p, int r){
     return i+1;
 }
 
-extern int randomized_partition(Entity arr[], int p, int r){
+extern int randomized_partition(Entity arr[], int p, int r, ecompare compare){
    srand(time(NULL));
    int dest = r - p + 1;
    int i = ( rand() % dest ) + p;
@@ -128,15 +103,15 @@ extern int randomized_partition(Entity arr[], int p, int r){
    arr[p] = arr[i];
    arr[i] = tmp;
 
-   return partition(arr, p, r);
+   return partition(arr, p, r, compare);
 }
 
-extern int quick_sort(Entity arr[], int p, int r, int (* partition_func)(Entity arr[], int p, int r)){
+extern int quick_sort(Entity arr[], int p, int r, ecompare compare, int (* partition_func)(Entity[], int, int, ecompare)){
 
    if (p < r){
-       int q = partition_func(arr, p, r);
-       quick_sort(arr, p, q-1, partition_func);
-       quick_sort(arr, q+1, r, partition_func);
+       int q = partition_func(arr, p, r, compare);
+       quick_sort(arr, p, q-1, compare, partition_func);
+       quick_sort(arr, q+1, r, compare, partition_func);
    }
    return 0;
 }

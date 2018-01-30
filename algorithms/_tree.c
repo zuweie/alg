@@ -14,10 +14,15 @@ extern TreeNode* create_tnode(Entity kv)
     return pt;
 }
 
-extern int init_tree(Tree* ptree)
+extern int init_tree(Tree* ptree, ecompare func)
 {
     ptree->root = NULL;
     ptree->size = 0;
+    if (func) {
+        ptree->compare = func;
+    }else{
+        ptree->compare = base_compare;
+    }
     return 0;
 }
 
@@ -31,18 +36,20 @@ extern int inorder_tree_walk (TreeNode* ptnode, int (*tnode_func)(TreeNode* ptno
     return 0;
 }
 
-extern TreeNode* tree_search(TreeNode* ptnode, void* to_match, Entity** entity)
+extern TreeNode* tree_search(Tree *ptree, TreeNode* ptnode, Entity e, Entity** entity)
 {
    
-    if (ptnode == NULL || ptnode->_entity.compare(&(ptnode->_entity), to_match) == 0){
+    if (ptnode == NULL || ptree->compare(&(ptnode->_entity), &e) == 0){
         if (ptnode && entity) 
             *entity = &(ptnode->_entity);
 	    return ptnode;
     }
-    if (ptnode->_entity.compare(&(ptnode->_entity), to_match) > 0){
-	    return tree_search (ptnode->left, to_match, entity);
-    }else{
-	    return tree_search (ptnode->right, to_match, entity);
+    if (ptree->compare(&(ptnode->_entity), &e) == 1){
+	    return tree_search (ptree, ptnode->left, e, entity);
+    }else if (ptree->compare(&(ptnode->_entity), &e) == -1){
+	    return tree_search (ptree, ptnode->right, e, entity);
+    }else {
+        return NULL;
     }
 }
 
@@ -93,7 +100,6 @@ extern TreeNode* tree_presuccessor(TreeNode* ptnode)
 
 extern int tree_insert(Tree* pt, Entity e)
 {
-
     TreeNode* py = NULL;
 	TreeNode* px = pt->root;
 
@@ -102,10 +108,12 @@ extern int tree_insert(Tree* pt, Entity e)
     while(px != NULL){
        py = px;
        
-       if (pz->_entity.compare(&(pz->_entity), &(py->_entity)) < 0){
+       if (pt->compare(&(pz->_entity), &(py->_entity)) == -1){
            px = px->left;	   		
-       }else{
+       }else if (pt->compare(&(pz->_entity), &e) >= 0){
            px = px->right;
+       }else{
+           return -1;
        }
     }
 
@@ -115,7 +123,7 @@ extern int tree_insert(Tree* pt, Entity e)
        pt->root = pz;
    }else{
        
-       if (py->_entity.compare(&(py->_entity), &(pz->_entity)) > 0){
+       if (pt->compare(&(py->_entity), &(pz->_entity)) == 1){
 	        py->left = pz;
        }else{
 	        py->right = pz;
@@ -127,7 +135,7 @@ extern int tree_insert(Tree* pt, Entity e)
 // 这里的中心思想就是将pz的后继py抽出来，
 // 然后将py的数据复制入pz中。
 
-extern TreeNode* _tree_delete(Tree* pt, TreeNode* pz)
+extern TreeNode* tree_remove(Tree* pt, TreeNode* pz)
 {
   
 	TreeNode* py = NULL;
@@ -169,11 +177,11 @@ extern TreeNode* _tree_delete(Tree* pt, TreeNode* pz)
    return py;
 }
 
-extern int tree_delete(Tree* pt, void* to_match, Entity* _entity)
+extern int tree_delete(Tree* pt, Entity e, Entity* _entity)
 {
     
-	TreeNode* pn = tree_search(pt->root, to_match, NULL);
-    TreeNode* pd =  _tree_delete(pt,  pn);
+	TreeNode* pn = tree_search(pt, pt->root, e, NULL);
+    TreeNode* pd =  tree_remove(pt,  pn);
 
     if (pn){
         if (_entity){

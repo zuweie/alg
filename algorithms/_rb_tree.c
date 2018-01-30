@@ -1,12 +1,18 @@
 #include <stdlib.h>
+#include "_entity.h"
 #include "_rb_tree.h"
 
-extern int init_rbtree(RBTree* pt)
+extern int init_rbtree(RBTree* pt, ecompare func)
 {
 
    pt->root = NULL;
    pt->size = 0;
    // init nil node;
+   if (func) {
+       pt->compare = func;
+   }else{
+       pt->compare = base_compare;
+   }
    return 0;
 }
 
@@ -17,7 +23,7 @@ extern RBTreeNode* create_rbnode(Entity e)
     pnode->left     = NULL;
     pnode->right    = NULL;
     pnode->_entity  = e;
-    return ;
+    return pnode;
 }
 
 extern RBTreeNode* rbtree_minimum (RBTreeNode* pn)
@@ -77,10 +83,10 @@ extern int left_rotate(RBTree* prb, RBTreeNode* px)
    px->right    = py->left;
    
    if (py->left != NULL)
-   	py->left->parent = px;
+   	    py->left->parent = px;
     
-   // 设置py的新老爸
-   py->parent = px->parent;
+        // 设置py的新老爸
+        py->parent = px->parent;
 
    // 设置py新老板的新儿子。
    if (px->parent == NULL){
@@ -88,10 +94,10 @@ extern int left_rotate(RBTree* prb, RBTreeNode* px)
         prb->root = py;
    }else if (px == px->parent->left){
 	// px 是他老子的左子树。
-	px->parent->left = py;
+	    px->parent->left = py;
    }else{
         // px 是他老子的右子树。
-	px->parent->right = py;
+	    px->parent->right = py;
    }
     
    
@@ -123,18 +129,20 @@ extern int right_rotate(RBTree* prb, RBTreeNode* px)
    return 0;
 }
 
-extern RBTreeNode* rb_search(RBTreeNode* pt, void* to_match, Entity** entity)
+extern RBTreeNode* rb_search(RBTree* ptree, RBTreeNode* pt, Entity e, Entity** entity)
 {
-    if (pt == NULL || pt->_entity.compare(&(pt->_entity), to_match) == 0 ){
+    if (pt == NULL || ptree->compare(&(pt->_entity), &e) == 0 ){
         if (pt && entity){
             *entity = &(pt->_entity);
         }
         return pt;
     }
-    if (pt->_entity.compare(&(pt->_entity), to_match) > 0){
-        return rb_search(pt->left, to_match, entity);
+    if (ptree->compare(&(pt->_entity), &e) == 1){
+        return rb_search(ptree, pt->left, e, entity);
+    }else if (ptree->compare(&(pt->_entity), &e) == -1){
+    	return rb_search(ptree, pt->right, e, entity);
     }else{
-    	return rb_search(pt->right, to_match, entity);
+        return NULL;
     }
 }
 
@@ -199,10 +207,10 @@ extern int rb_insert_fixup(RBTree* prb, RBTreeNode* pz)
 	       // CASE 2 3
                if (pz == pz->parent->left){
 	           // 如果pz是左子树。这里还包含了一个隐藏条件，pz的左叔叔。
-		   // case 2 算法导论的 p171 页。
-                  // 如果pz自己是右子树。这里还包含了一个隐藏条件就是，pz的右叔叔是黑色的。
-                  // 如果pz的右叔叔是红色的，就会进入上面case1的处理。
-                  // pz的指针跳到其父亲哪里。
+		       // case 2 算法导论的 p171 页。
+               // 如果pz自己是右子树。这里还包含了一个隐藏条件就是，pz的右叔叔是黑色的。
+               // 如果pz的右叔叔是红色的，就会进入上面case1的处理。
+               // pz的指针跳到其父亲哪里。
 	          pz = pz->parent;
                   right_rotate(prb, pz);
 	       }
@@ -221,14 +229,16 @@ extern int rb_insert(RBTree* prb, Entity e)
 {
 	RBTreeNode* py = NULL;
 	RBTreeNode* px = prb->root;
-    RBTreeNode* pz = create_tnode(e);
+    RBTreeNode* pz = create_rbnode(e);
 
     while(px != NULL){
         py = px;
-        if (pz->_entity.compare(&(pz->_entity), &(px->_entity)) < 0){
+        if (prb->compare(&(pz->_entity), &(px->_entity)) == -1){
         	px = px->left;
-        }else{
+        }else if (prb->compare(&(pz->_entity), &(px->_entity)) >= 0 ){
         	px = px->right;
+        }else{
+            return -1;
         }
     }
     
@@ -236,7 +246,7 @@ extern int rb_insert(RBTree* prb, Entity e)
 
     if (py == NULL){
     	prb->root = pz;
-    }else if (pz->_entity.compare(&(pz->_entity), &(py->_entity)) < 0){
+    }else if (prb->compare(&(pz->_entity), &(py->_entity)) == -1){
     	py->left = pz;
     }else{
         py->right = pz;
@@ -367,7 +377,7 @@ extern int rb_delete_fixup(RBTree* prb, RBTreeNode* px, RBTreeNode* px_parent, i
     return 0;
 }
 
-extern RBTreeNode* _rb_delete(RBTree* prb, RBTreeNode* pz)
+extern RBTreeNode* rb_remove(RBTree* prb, RBTreeNode* pz)
 {
 	RBTreeNode* py;
 	RBTreeNode* px;
@@ -411,11 +421,11 @@ extern RBTreeNode* _rb_delete(RBTree* prb, RBTreeNode* pz)
     return py;
 }
 
-extern int rb_delete(RBTree* prb, void* to_match, Entity *entity)
+extern int rb_delete(RBTree* prb, Entity e, Entity *entity)
 {
-	RBTreeNode* pz = rb_search(prb->root, to_match, NULL);
+	RBTreeNode* pz = rb_search(prb, prb->root, e, NULL);
     if (pz){
-        RBTreeNode* pnd = _rb_delete(prb, pz);
+        RBTreeNode* pnd = rb_remove(prb, pz);
         //pnd->_entity.cleanup && pnd->_entity.cleanup();
         if (entity){
             *entity = pnd->_entity;

@@ -21,14 +21,15 @@ typedef struct _DLinkedList {
 
   ListNode sentinel;
   size_t  size;
-
+  ecompare compare;
+  
 } DLinkedList;
 
-extern int dlist_init(DLinkedList*);
+extern int dlist_init(DLinkedList*, ecompare func);
 extern int dlist_put(DLinkedList*, Entity);
 extern int dlist_push(DLinkedList*, Entity);
-extern int dlist_find(DLinkedList*, void*, Entity**);
-extern int dlist_remove(DLinkedList*, void*,  Entity*);
-extern int dlist_removel_all(DLinkedList*);
+extern ListNode* dlist_find(DLinkedList*, Entity e, Entity**);
+extern int dlist_remove(DLinkedList*, Entity e,  Entity*);
+extern int dlist_removel_all(DLinkedList*, int(*)(Entity*));
 
 #endif

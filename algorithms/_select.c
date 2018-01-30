@@ -2,12 +2,13 @@
 #include "_entity.h"
 #include "_sort.h"
 
-extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmin){
+// 选最大最小的函数
+extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmin, ecompare compare){
 
     int i,j;
     if ((size % 2) == 0){
        // 偶数
-       if (arr[0].key >= arr[1].key){
+       if (compare(&arr[0], &arr[1]) >= 0){
 	        *pmax = &arr[0];
 	        *pmin = &arr[1];
        }else{
@@ -23,19 +24,19 @@ extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmi
     }
  
     for (; i<size; i+=2){
-	    if (arr[i].key < arr[i+1].key){
-	        *pmin = (arr[i].key < (*pmin)->key) ? &arr[i] : *pmin;
-           *pmax = (arr[i+1].key > (*pmax)->key) ? &arr[i+1] : *pmax;
+        if (compare(&arr[i], &arr[i+1]) < 0){
+            *pmin = (compare(&arr[i], pmin) < 0) ? &arr[i] : *pmin;
+            *pmax = (compare(&arr[i+i], pmax) > 0) ? &arr[i+1] : *pmax;
         }else{
-	        *pmin = (arr[i+1].key < (*pmin)->key) ? &arr[i+1] : *pmin;
-	        *pmax = (arr[i].key > (*pmax)->key) ? &arr[i] : *pmax;
+            *pmin = (compare(&arr[i+1], pmin) < 0) ? &arr[i+1] : *pmin;
+            *pmax = (compare(&arr[i], pmax) > 0) ? &arr[i] : *pmax;
         }
     }
     
     return 0;
 }
 
-extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pret){
+extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pret, ecompare compare){
     if (p == r){
       *pret = &arr[p];
       return 0;
@@ -43,7 +44,7 @@ extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pr
 
     // 随机挑选一个元素arr[q]将其分开左右两部分。左小，右大。
     // 查看一下q是不是第i个元素。于是有 q-p+1 == i;
-    int q = randomized_partition(arr, p, r);
+    int q = randomized_partition(arr, p, r, compare);
     int k = q - p + 1;
 
     // 若 q 是第 i 个元素。即是答案。
@@ -55,9 +56,9 @@ extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pr
     	*pret = &arr[q];
 		return 0;
     }else if ( i < k)
-    	return randomized_select_imax(arr, p, q-1, i, pret);
+    	return randomized_select_imax(arr, p, q-1, i, pret, compare);
     else
-    	return randomized_select_imax(arr, q+1, r, i - k, pret);
+    	return randomized_select_imax(arr, q+1, r, i - k, pret, compare);
 }
 
 

@@ -8,11 +8,11 @@
 #include "_entity.h"
 #include "_sort.h"
 #include "_heap.h"
-#include "_tool.h"
 #include "_select.h"
 #include "_d_linked_list.h"
 #include "_hash.h"
 #include "_tree.h"
+#include "helper.h"
 
 Entity* pkv_arr;
 size_t arr_size;
@@ -22,43 +22,43 @@ void test_insertion_sort(void){
    int i;
    const size_t SIZE = 10;
    Entity kv_arr[SIZE];
-   fill_kv_array_random(kv_arr, SIZE);
+   init_ie_arr(kv_arr, SIZE);
    
    printf("sort before:\n");
-   print_kv_key(kv_arr, SIZE);
+   print_entity_arr(kv_arr, SIZE);
 
    // TODO : sort the array
-   insertion_sort(kv_arr, SIZE);
+   insertion_sort(kv_arr, SIZE, base_compare);
 
    for(i=1; i<SIZE; ++i){
-      CU_ASSERT(kv_arr[i].key > kv_arr[i-1].key);
+      //CU_ASSERT(kv_arr[i].key > kv_arr[i-1].key);
+      CU_ASSERT(base_compare(&kv_arr[i], &kv_arr[i-1]) == 1)
    }
    
    printf("sort after:\n");
-   print_kv_key(kv_arr, SIZE);
+   print_entity_arr(kv_arr, SIZE);
 }
 
 void test_merge_sort(void){
   int i;
   const size_t SIZE = 6;
   Entity kv_arr[SIZE];
-  fill_kv_array_random(kv_arr, SIZE);
-  print_kv_key(kv_arr, SIZE);
-  merge_sort(kv_arr, 0, SIZE-1);
+  init_ie_arr(kv_arr, SIZE);
+  print_entity_arr(kv_arr, SIZE);
+  merge_sort(kv_arr, 0, SIZE-1, base_compare);
   for(i=1; i<SIZE; ++i){
-     CU_ASSERT(kv_arr[i].key > kv_arr[i-1].key);
+     CU_ASSERT(base_compare(&kv_arr[i], &kv_arr[i-1]) == 1);
   }
-  print_kv_key(kv_arr, SIZE);
+  print_entity_arr(kv_arr, SIZE);
 }
 
 void test_build_heap(void) {
    int i;
    const size_t SIZE = 100;
    Entity kv_arr[SIZE];
-   fill_kv_array_random(kv_arr, SIZE);
-   //print_kv_key(kv_arr, SIZE);
+   init_ie_arr(kv_arr, SIZE);
    print_heap(kv_arr, SIZE);
-   build_max_heap(kv_arr, SIZE);
+   build_max_heap(kv_arr, SIZE, base_compare);
    //print_kv_key(kv_arr, SIZE);
    print_heap(kv_arr, SIZE);
 }
@@ -67,88 +67,82 @@ void test_heap_sort(void) {
    const size_t SIZE = 50;
    Entity kv_arr[SIZE];
    
-   fill_kv_array_random(kv_arr, SIZE);
-   print_kv_key(kv_arr, SIZE);
-   heap_sort(kv_arr, SIZE);
+   init_ie_arr(kv_arr, SIZE);
+   print_entity_arr(kv_arr, SIZE);
+   heap_sort(kv_arr, SIZE,base_compare);
    int i;
    for(i=1; i<SIZE; ++i){
-	CU_ASSERT(kv_arr[i].key >= kv_arr[i-1].key);
+	CU_ASSERT(base_compare(&kv_arr[i], &kv_arr[i-1]) == 1);
    } 
-   print_kv_key(kv_arr, SIZE);
+   print_entity_arr(kv_arr, SIZE);
 }
 
 void test_quick_sort(void){
 
-   //const size_t SIZE = 10;
-   //kv_t kv_arr[SIZE];
+
  
    //fill_kv_array_random(kv_arr, SIZE);
-   print_kv_key(pkv_arr, arr_size);
-   quick_sort(pkv_arr, 0, arr_size-1, partition);
-   print_kv_key(pkv_arr, arr_size);
+   init_ie_arr(pkv_arr, arr_size);
+   print_entity_arr(pkv_arr, arr_size);
+
+   quick_sort(kv_arr, 0, SIZE-1, partition);
+   print_entity_arr(kv_arr, arr_size);
    
    // ASSERT 
    int i;
    for (i=1; i<arr_size; ++i){
-	CU_ASSERT(pkv_arr[i].key >= pkv_arr[i-1].key);
+	CU_ASSERT(base_compare(&kv_arr[i], &kv_arr[i-1]) == 1);
    }
 }
 
 void test_random_quick_sort(void){
  
-  print_kv_key(pkv_arr, arr_size);
-  quick_sort(pkv_arr, 0, arr_size-1, randomized_partition);
-  print_kv_key(pkv_arr, arr_size);  
+  print_entity_arr(pkv_arr, arr_size);
+  quick_sort(pkv_arr, 0, arr_size-1, randomized_partition, base_compare);
+  print_entity_arr(pkv_arr, arr_size);  
  
 }
 
 void test_select_max_min(void){
-  print_kv_key(pkv_arr, arr_size);
-  quick_sort(pkv_arr, 0, arr_size-1, randomized_partition);
-  print_kv_key(pkv_arr, arr_size);
+  print_entity_arr(pkv_arr, arr_size);
+  quick_sort(pkv_arr, 0, arr_size-1, randomized_partition, base_compare);
+  print_entity_arr(pkv_arr, arr_size);
   Entity *pmax, *pmin;
   select_max_min(pkv_arr, arr_size, &pmax, &pmin);
-  printf("max : %d, min : %d \n", pmax->key, pmin->key);
+  printf("max : %d, min : %d \n", pmax->_data.ie, pmin->_data.ie);
 }
 
 void test_randomized_select_imax(void){
   
-   print_kv_key(pkv_arr, arr_size);
+   print_entity_arr(pkv_arr, arr_size);
   
    Entity *p;
-   randomized_select_imax(pkv_arr, 0, arr_size-1, 4, &p);
+   randomized_select_imax(pkv_arr, 0, arr_size-1, 4, &p, base_compare);
 
    printf("imax : %d\n", p->key);
 
-   quick_sort(pkv_arr, 0, arr_size-1, randomized_partition);
-   print_kv_key(pkv_arr, arr_size);
+   quick_sort(pkv_arr, 0, arr_size-1, randomized_partition, base_compare);
+   print_entity_arr(pkv_arr, arr_size);
 
 }
 
 void test_linked_list(void) {
    DLinkedList list;
-   init_list(&list);
+   init_list(&list, NULL);
    
-   fill_linked_list_random(&list, arr_size);
+   fill_linked_list_random(&list, pkv_arr, arr_size);
 
    print_linked_list(&list, FALSE);
    print_linked_list(&list, TRUE);
 
-   ListNode* pn;
-   get_node(&list, 4, &pn);
-   printf("\nwe get 4th node : %d \n", pn->_entity.key);
- 
-   get_node(&list, 6, &pn);
-   printf("we get 6th node : %d \n", pn->_entity.key);
+   Entity *pentity;
+   printf("remove 4th node");
+   dlist_remove(&list, pkv_arr[4], &pentity);
 
-   int k = pn->_entity.key;
+   print_entity(pentity);
 
-   delete_list_by_key(&list, k, &pn);
-
-   printf("delete 6th node : %d \n", pn->_entity.key);
    print_linked_list(&list, FALSE);
-   free(pn);
-   cleanup_linked_list(&list);
+   dlist_removel_all(&list, cleanup_listnode);
 }
 
 void test_hash_key(void){
@@ -159,12 +153,12 @@ void test_hash_key(void){
 void test_build_tree(void){
 
     Tree tree;
-    init_tree(&tree);
+    init_tree(&tree, base_compare);
     TreeNode tnode[arr_size];
-    print_kv_key(pkv_arr, arr_size);
+    print_entity_arr(pkv_arr, arr_size);
     int i;
     for (i=0; i<arr_size; ++i){
-	pkv_arr[i];
+	    pkv_arr[i];
         init_tnode(&tnode[i], pkv_arr[i]);
 	    tree_insert(&tree, &tnode[i]);
     }

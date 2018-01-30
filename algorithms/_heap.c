@@ -7,41 +7,41 @@
 // 这里的过程是自上而下的。
 // 在i个元素开始检查。若有子比其则换。
 
-extern int max_heapify(Entity arr[], int i, size_t heap_sz){
+extern int max_heapify(Entity arr[], int i, size_t heap_sz, ecompare compare){
 
     int l = LEFT(i);
     int r = RIGHT(i);
     int largest = -1;
 
     // 不管左或右，那个子大，就跟那个子换。保证坐在头头的是最大的。
-    if (l < heap_sz && arr[l].key > arr[i].key)
+    if (l < heap_sz && compare(&arr[l], &arr[i]) == 1 )
        largest = l;
     else
        largest = i;
    
-    if (r < heap_sz && arr[r].key > arr[largest].key)
-	largest = r;
+    if (r < heap_sz && compare(&arr[r], &arr[largest] == 1))
+	    largest = r;
     
     if (largest >=0 && largest != i){
     	Entity tmp =  arr[i];
         arr[i] = arr[largest];
-	arr[largest] = tmp;
-        max_heapify(arr, largest, heap_sz);
+	    arr[largest] = tmp;
+        max_heapify(arr, largest, heap_sz, compare);
     }
  
     return 0;
 }
 
-extern int build_max_heap(Entity arr[], size_t size){
+extern int build_max_heap(Entity arr[], size_t size, ecompare compare){
    int i = size/2 -1;
    for (;i>=0; --i){
-	max_heapify(arr, i, size);
+	max_heapify(arr, i, size, compare);
    }
    return 0;
 }
  
-extern int heap_sort(Entity arr[], size_t size){
-    build_max_heap(arr, size);
+extern int heap_sort(Entity arr[], size_t size, ecompare compare){
+    build_max_heap(arr, size, compare);
     int i;
     Entity tmp;
     size_t heap_sz = size;
@@ -51,7 +51,7 @@ extern int heap_sort(Entity arr[], size_t size){
     	tmp = arr[0];
         arr[0] = arr[i];
         arr[i] = tmp;
-	    max_heapify(arr, 0, --heap_sz);
+	    max_heapify(arr, 0, --heap_sz, compare);
     }
     return 0;
 }

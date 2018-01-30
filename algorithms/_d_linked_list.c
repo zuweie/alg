@@ -1,10 +1,16 @@
 #include <stdlib.h>
+#include "_entity.h"
 #include "_d_linked_list.h"
 
-extern int dlist_init(DLinkedList* plist){
+extern int dlist_init(DLinkedList* plist, ecompare func){
    plist->size = 0;
    LIST_FIRST(plist) = LIST_HEAD(plist);
    LIST_LAST(plist)  = LIST_TAIL(plist);
+   if (func) {
+       plist->compare = func;
+   }else{
+       plist->compare = base_compare;
+   }
    return 0;
 }
 
@@ -42,7 +48,7 @@ extern int dlist_push(DLinkedList* plist, Entity e)
    return ++(plist->size);
 }
 
-extern ListNode* dlist_find(DLinkedList* plist, void* to_match, Entity** _entity)
+extern ListNode* dlist_find(DLinkedList* plist, Entity e, Entity** _entity)
 {
     ListNode* pf;
     if (_entity)
@@ -50,7 +56,7 @@ extern ListNode* dlist_find(DLinkedList* plist, void* to_match, Entity** _entity
     int i=0;
 
     for(pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
-        if (pf->_entity.compare(&(pf->_entity), to_match) == 0){
+        if (plist->compare(&(pf->_entity), &e) == 0){
             if (_entity)
                 *_entity =  &(pf->_entity);
             return pf;
@@ -59,16 +65,9 @@ extern ListNode* dlist_find(DLinkedList* plist, void* to_match, Entity** _entity
     return NULL;
 }
 
-extern int dlist_remove(DLinkedList* plist, void* to_match, Entity* _entity)
+extern int dlist_remove(DLinkedList* plist, Entity e, Entity* _entity)
 {
-    ListNode* pf = dlist_find(plist, to_match, NULL);
-    
-    /*
-    for (pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
-        if (pf->_entity.compare(&(pf->_entity), to_match) == 0) break;
-    }
-    */
-
+    ListNode* pf = dlist_find(plist, e, NULL);
     if (pf) {
         pf->prev->next = pf->next;
         pf->next->prev = pf->prev;
@@ -81,14 +80,16 @@ extern int dlist_remove(DLinkedList* plist, void* to_match, Entity* _entity)
     return plist->size;
 }
 
-extern int dl_remove_all(DLinkedList* plist)
+extern int dl_remove_all(DLinkedList* plist, int (*cleanup)(Entity* e))
 {
     ListNode* pf = LIST_FIRST(plist);
     while(pf != LIST_TAIL(plist)){
         pf->prev->next = pf->next;
         pf->next->prev = pf->prev;
-        pf->_entity.cleanup && pf->_entity.cleanup(&(pf->_entity));
         // fee node;
+        if (cleanup) {
+            cleanup(&(pf->_entity));
+        }
         free(pf);
         pf = LIST_FIRST(plist);
     }

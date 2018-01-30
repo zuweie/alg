@@ -1,28 +1,29 @@
-#ifndef _ENTITY_H_
-#define _ENTITY_H_
+#ifndef _UDATA_H_
+#define _UDATA_H_
 
 // 对所有数据的一种抽象。
-typedef union _UValue {
-        int ivalue;
-        long lvalue;
-        short svalue;
-        char  cvalue;
-        float fvalue;
-        double dvalue;
-        unsigned int uivalue;
-        unsigned long ulvalue;
-        unsigned short usvalue;
-        unsigned char  ucvalue;
-        char* pcvalue;
-        void* pvalue;
-} Uvalue;
+
+typedef enum Vtype { EINT, EFLOAT, ESTRING, EPOINTER} Vtype;
+
+typedef union _Udata {
+    int ie;
+    float fe;
+    char* string;
+    void* pointer;
+} Udata;
 
 typedef struct _Entity {
-    Uvalue _data; 
-    int (*compare) (const void* thiz, const void* other);
-    int (*cleanup) (struct _Entity* e);
+    Udata _data;
+    Vtype _vtype;
+}Entity;
 
-} Entity;
+typedef int (*ecompare)(Entity* e1, Entity* e2);
 
+extern int base_compare (Entity* e1, Entity* e2);
+
+extern Entity i2e(int);
+extern Entity f2e(float);
+extern Entity s2e(char*);
+extern Entity p2e(void*);
 #endif
 

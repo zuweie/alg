@@ -8,9 +8,9 @@ dependencies  = $(subst .c,.d,$(sources))
 
 
 project_dir   := $(shell pwd)
-include_dirs  := $(project_dir)/algorithms
-sources_dirs  := $(project_dir)/algorithms
-testcase_dirs := $(project_dir)test_case
+include_dirs  := $(project_dir)/algorithms 
+sources_dirs  := $(project_dir)/algorithms 
+testcase_dirs := $(project_dir)/test_case
 
 bin          := out
 

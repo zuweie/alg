@@ -7,7 +7,7 @@ typedef struct _Graph
 {
     size_t v_count;
     size_t e_count;
-
+    
 } Graph;
 
 #endif
