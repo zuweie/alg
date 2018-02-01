@@ -26,7 +26,7 @@ extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmi
     for (; i<size; i+=2){
         if (compare(&arr[i], &arr[i+1]) == -1){
             *pmin = (compare(&arr[i], *pmin) == -1) ? &arr[i] : *pmin;
-            *pmax = (compare(&arr[i+i], *pmax) == 1) ? &arr[i+1] : *pmax;
+            *pmax = (compare(&arr[i+1], *pmax) == 1) ? &arr[i+1] : *pmax;
         }else{
             *pmin = (compare(&arr[i+1], *pmin) == -1) ? &arr[i+1] : *pmin;
             *pmax = (compare(&arr[i], *pmax) ==1 ) ? &arr[i] : *pmax;
@@ -36,6 +36,7 @@ extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmi
     return 0;
 }
 
+// 选择第i个大的数。
 extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pret, ecompare compare){
     if (p == r){
       *pret = &arr[p];

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "_entity.h"
 #include "_sort.h"
 #define MAX 0x7fffffff
@@ -35,28 +36,37 @@ extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2, ecompare comp
    size_t i,j, k;
    size_t l_sz = sm-s1+1;
    size_t r_sz = s2-sm;
-   Entity lkv_arr[l_sz+1];
-   Entity rkv_arr[r_sz+1];
+   Entity lkv_arr[l_sz];
+   Entity rkv_arr[r_sz];
 
    for(i=0; i<l_sz; ++i){
 	lkv_arr[i] = kv_arr[s1+i];
    }
 
    for (j=0; j<r_sz; ++j){
-        rkv_arr[j] = kv_arr[sm+1+j];
+    rkv_arr[j] = kv_arr[sm+1+j];
    }
 
-   lkv_arr[l_sz] = i2e(MAX);
-   rkv_arr[r_sz] = i2e(MAX);
+   //lkv_arr[l_sz] = i2e(MAX);
+   //rkv_arr[r_sz] = i2e(MAX);
 
    for (i=0, j=0, k=0; k<(s2-s1+1); ++k){
-    if (compare(&lkv_arr[i], &rkv_arr[j]) == -1){
-	   kv_arr[s1+k] = lkv_arr[i];
-	   i++;
-	}else{
-	   kv_arr[s1+k] = rkv_arr[j];
-	   j++;
-	}
+    if (i == l_sz) {
+        kv_arr[s1+k] = rkv_arr[j];
+	    j++;
+    }else if (j == r_sz){
+        kv_arr[s1+k] = lkv_arr[i];
+	    i++;
+    }else{
+        if (compare(&lkv_arr[i], &rkv_arr[j]) <= 0){
+	        kv_arr[s1+k] = lkv_arr[i];
+	        i++;
+	    }else{
+	        kv_arr[s1+k] = rkv_arr[j];
+	        j++;
+	    }
+    }
+
    }
    return 0;
 }

@@ -20,7 +20,7 @@ size_t arr_size;
 void test_insertion_sort(void){
    // TODO : make a kv array
    int i;
-   const size_t SIZE = 10;
+   const size_t SIZE = 20;
    Entity kv_arr[SIZE];
    init_ie_arr(kv_arr, SIZE);
    
@@ -30,16 +30,35 @@ void test_insertion_sort(void){
    // TODO : sort the array
    insertion_sort(kv_arr, SIZE, base_compare);
 
+   /*
    for(i=1; i<SIZE; ++i){
       //CU_ASSERT(kv_arr[i].key > kv_arr[i-1].key);
       CU_ASSERT(base_compare(&kv_arr[i], &kv_arr[i-1]) == 1)
    }
-   
+   */
    printf("sort after:\n");
    print_entity_arr(kv_arr, SIZE);
+
+   init_fe_arr(kv_arr, SIZE);
+   
+   printf("float sort before:\n");
+   print_entity_arr(kv_arr, SIZE);
+   insertion_sort(kv_arr, SIZE, base_compare);
+   printf("float sort after:\n");
+   print_entity_arr(kv_arr, SIZE);
+
+   init_strings_arr(kv_arr, SIZE);
+   printf("string sort before:\n");
+   print_entity_arr(kv_arr, SIZE);
+   insertion_sort(kv_arr, SIZE, base_compare);
+   printf("string sort after:\n");
+   print_entity_arr(kv_arr, SIZE);
+
+
 }
 
 void test_merge_sort(void){
+  /*
   int i;
   const size_t SIZE = 6;
   Entity kv_arr[SIZE];
@@ -50,6 +69,37 @@ void test_merge_sort(void){
      CU_ASSERT(base_compare(&kv_arr[i], &kv_arr[i-1]) == 1);
   }
   print_entity_arr(kv_arr, SIZE);
+  */
+  int i;
+   const size_t SIZE = 20;
+   Entity kv_arr[SIZE];
+   init_ie_arr(kv_arr, SIZE);
+   
+   printf("sort before:\n");
+   print_entity_arr(kv_arr, SIZE);
+
+   // TODO : sort the array
+   //这里要输入index啊 所以最后一个的index 是 size -1
+   merge_sort(kv_arr, 0, SIZE-1, base_compare);
+   
+   printf("sort after:\n");
+   print_entity_arr(kv_arr, SIZE);
+
+   
+   init_fe_arr(kv_arr, SIZE);
+   printf("float sort before:\n");
+   print_entity_arr(kv_arr, SIZE);
+   merge_sort(kv_arr, 0, SIZE-1, base_compare);
+   printf("float sort after:\n");
+   print_entity_arr(kv_arr, SIZE);
+    
+   init_strings_arr(kv_arr, SIZE);
+   printf("string sort before:\n");
+   print_entity_arr(kv_arr, SIZE);
+   merge_sort(kv_arr, 0, SIZE-1, base_compare);
+   printf("string sort after:\n");
+   print_entity_arr(kv_arr, SIZE);
+   
 }
 
 void test_build_heap(void) {
@@ -64,16 +114,23 @@ void test_build_heap(void) {
 }
 
 void test_heap_sort(void) {
-   const size_t SIZE = 50;
+   const size_t SIZE = 20;
    Entity kv_arr[SIZE];
    
    init_ie_arr(kv_arr, SIZE);
    print_entity_arr(kv_arr, SIZE);
    heap_sort(kv_arr, SIZE,base_compare);
+   /*
    int i;
    for(i=1; i<SIZE; ++i){
 	CU_ASSERT(base_compare(&kv_arr[i], &kv_arr[i-1]) == 1);
    } 
+   */
+   print_entity_arr(kv_arr, SIZE);
+
+   init_strings_arr(kv_arr, SIZE);
+   print_entity_arr(kv_arr, SIZE);
+   heap_sort(kv_arr, SIZE, base_compare);
    print_entity_arr(kv_arr, SIZE);
 }
 
@@ -81,7 +138,7 @@ void test_heap_sort(void) {
 
 void test_quick_sort(void){
 
-   init_ie_arr(pkv_arr, arr_size);
+   init_strings_arr(pkv_arr, arr_size);
    print_entity_arr(pkv_arr, arr_size);
 
    quick_sort(pkv_arr, 0, arr_size-1, base_compare, partition);
@@ -97,7 +154,7 @@ void test_quick_sort(void){
 }
 
 void test_random_quick_sort(void){
- 
+  init_strings_arr(pkv_arr, arr_size);
   print_entity_arr(pkv_arr, arr_size);
   quick_sort(pkv_arr, 0, arr_size-1, base_compare, randomized_partition);
   print_entity_arr(pkv_arr, arr_size);  
@@ -105,22 +162,30 @@ void test_random_quick_sort(void){
 }
 
 void test_select_max_min(void){
+
+  init_ie_arr(pkv_arr, arr_size);
   print_entity_arr(pkv_arr, arr_size);
   quick_sort(pkv_arr, 0, arr_size-1, base_compare, randomized_partition);
   print_entity_arr(pkv_arr, arr_size);
   Entity *pmax, *pmin;
   select_max_min(pkv_arr, arr_size, &pmax, &pmin, base_compare);
-  printf("max : %d, min : %d \n", pmax->_data.ie, pmin->_data.ie);
+  //printf("max : %d, min : %d \n", pmax->_data.ie, pmin->_data.ie);
+  printf("max : ");
+  print_entity(pmax);
+  printf(" min : ");
+  print_entity(pmin);
+  printf("\n");
 }
 
 void test_randomized_select_imax(void){
   
+   init_ie_arr(pkv_arr, arr_size);
    print_entity_arr(pkv_arr, arr_size);
   
    Entity *p;
    randomized_select_imax(pkv_arr, 0, arr_size-1, 4, &p, base_compare);
 
-   //printf("imax : %d\n", p->key);
+   printf("max :");
    print_entity(p);
 
    quick_sort(pkv_arr, 0, arr_size-1, base_compare, randomized_partition);
@@ -240,7 +305,7 @@ int main( int argc, char* argv[] ){
 
    //弄些实验数据
    pkv_arr = malloc(sizeof(Entity) * arr_size);
-   init_ie_arr(pkv_arr, arr_size);
+   //init_ie_arr(pkv_arr, arr_size);
     
    CU_pSuite pSuite = NULL;
   
