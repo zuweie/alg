@@ -18,7 +18,6 @@ typedef struct _Entity {
 }Entity;
 
 typedef int (*ecompare)(Entity* e1, Entity* e2);
-
 extern int base_compare (Entity* e1, Entity* e2);
 
 extern Entity i2e(int);

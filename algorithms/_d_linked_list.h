@@ -28,8 +28,8 @@ typedef struct _DLinkedList {
 extern int dlist_init(DLinkedList*, ecompare func);
 extern int dlist_put(DLinkedList*, Entity);
 extern int dlist_push(DLinkedList*, Entity);
-extern ListNode* dlist_find(DLinkedList*, Entity e, Entity**);
-extern int dlist_remove(DLinkedList*, Entity e,  Entity*);
-extern int dlist_removel_all(DLinkedList*, int(*)(Entity*));
+extern ListNode* dlist_find(DLinkedList* plist, ListNode* start_from, Entity e, int(*filter)(Entity*e1, Entity*e2), Entity** _entity);
+extern ListNode* dlist_remove(DLinkedList* plist, ListNode* start_from, Entity e, int (*filter)(Entity* e1, Entity* e2), Entity* _entity);
+extern int dlist_remove_all(DLinkedList*, int(*cleanup)(Entity*));
 
 #endif

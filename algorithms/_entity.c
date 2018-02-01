@@ -1,6 +1,6 @@
 #include "_entity.h"
 
-extern int base_compare (Entity* e1, Entity* e2){
+int base_compare (Entity* e1, Entity* e2){
     Vtype vtype = e1->_vtype;
     switch (vtype) {
         case EINT:
@@ -23,26 +23,26 @@ extern int base_compare (Entity* e1, Entity* e2){
             return e1->_data.pointer == e2->_data.pointer ? 0: -2;
     }
 }
-extern Entity i2e(int v){
+Entity i2e(int v){
     Entity e;
     e._data.ie = v;
     e._vtype = EINT;
     return e;
 }
-extern Entity f2e(float v){
+Entity f2e(float v){
     Entity e;
     e._data.fe = v;
     e._vtype = EFLOAT;
     return e;
 }
-extern Entity s2e(char* v){
+Entity s2e(char* v){
     Entity e;
     e._data.string = v;
     e._vtype = ESTRING;
     return e;
 }
 
-extern Entity p2e(void* v){
+Entity p2e(void* v){
     Entity e;
     e._data.string = v;
     e._vtype = EPOINTER;

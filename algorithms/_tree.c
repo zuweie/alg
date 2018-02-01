@@ -36,18 +36,20 @@ extern int inorder_tree_walk (TreeNode* ptnode, int (*tnode_func)(TreeNode* ptno
     return 0;
 }
 
-extern TreeNode* tree_search(Tree *ptree, TreeNode* ptnode, Entity e, Entity** entity)
+extern TreeNode* tree_search(Tree *ptree, TreeNode* ptnode, int (*filter)(Entity* e1, Entity* e2), Entity e, Entity** entity)
 {
    
-    if (ptnode == NULL || ptree->compare(&(ptnode->_entity), &e) == 0){
+    if (ptnode == NULL 
+    || (filter && filter(&(ptnode->_entity), &e)) 
+    || (ptree->compare(&(ptnode->_entity), &e) == 0) ){
         if (ptnode && entity) 
             *entity = &(ptnode->_entity);
 	    return ptnode;
     }
     if (ptree->compare(&(ptnode->_entity), &e) == 1){
-	    return tree_search (ptree, ptnode->left, e, entity);
+	    return tree_search (ptree, ptnode->left, filter, e, entity);
     }else if (ptree->compare(&(ptnode->_entity), &e) == -1){
-	    return tree_search (ptree, ptnode->right, e, entity);
+	    return tree_search (ptree, ptnode->right, filter, e, entity);
     }else {
         return NULL;
     }
@@ -173,22 +175,22 @@ extern TreeNode* tree_remove(Tree* pt, TreeNode* pz)
        pz->_entity = py->_entity;
        py->_entity = kk;
    }
-   pt->size--;
+   --(pt->size);
    return py;
 }
 
-extern int tree_delete(Tree* pt, Entity e, Entity* _entity)
+extern int tree_delete(Tree* pt, int (*filter)(Entity* e1, Entity* e2), Entity e, Entity* _entity)
 {
     
-	TreeNode* pn = tree_search(pt, pt->root, e, NULL);
-    TreeNode* pd =  tree_remove(pt,  pn);
-
+	TreeNode* pn = tree_search(pt, pt->root, filter, e, NULL);
+    TreeNode* pd = tree_remove(pt,  pn);
     if (pn){
         if (_entity){
             *_entity = pn->_entity;
         }
         free(pn);
+        return 1;
     }
-    return pt->size;
+    return 0;
 }
 

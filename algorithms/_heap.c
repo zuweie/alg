@@ -19,7 +19,7 @@ extern int max_heapify(Entity arr[], int i, size_t heap_sz, ecompare compare){
     else
        largest = i;
    
-    if (r < heap_sz && compare(&arr[r], &arr[largest] == 1))
+    if (r < heap_sz && compare(&arr[r], &arr[largest]) == 1)
 	    largest = r;
     
     if (largest >=0 && largest != i){

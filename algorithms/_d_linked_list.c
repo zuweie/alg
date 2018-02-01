@@ -48,16 +48,17 @@ extern int dlist_push(DLinkedList* plist, Entity e)
    return ++(plist->size);
 }
 
-extern ListNode* dlist_find(DLinkedList* plist, Entity e, Entity** _entity)
+extern ListNode* dlist_find(DLinkedList* plist, ListNode* start_from, Entity e, int(*filter)(Entity*e1, Entity*e2), Entity** _entity)
 {
     ListNode* pf;
     if (_entity)
         *_entity = NULL;
     int i=0;
 
-    for(pf = LIST_FIRST(plist); pf != LIST_TAIL(plist); pf = pf->next){
-        if (plist->compare(&(pf->_entity), &e) == 0){
-            if (_entity)
+    for(pf = start_from; pf != LIST_TAIL(plist); pf = pf->next){
+        if ( (filter && filter(&(pf->_entity), &e)) 
+           || plist->compare(&(pf->_entity), &e) == 0){
+           if (_entity)
                 *_entity =  &(pf->_entity);
             return pf;
 	    }
@@ -65,10 +66,12 @@ extern ListNode* dlist_find(DLinkedList* plist, Entity e, Entity** _entity)
     return NULL;
 }
 
-extern int dlist_remove(DLinkedList* plist, Entity e, Entity* _entity)
+extern ListNode* dlist_remove(DLinkedList* plist, ListNode* start_from, Entity e, int (*filter)(Entity* e1, Entity* e2), Entity* _entity)
 {
-    ListNode* pf = dlist_find(plist, e, NULL);
+    ListNode* pf = dlist_find(plist, start_from, e, filter,  NULL);
+    ListNode* next = NULL;
     if (pf) {
+        next = pf->next;
         pf->prev->next = pf->next;
         pf->next->prev = pf->prev;
         if (_entity) {
@@ -77,10 +80,10 @@ extern int dlist_remove(DLinkedList* plist, Entity e, Entity* _entity)
         free(pf);
         --(plist->size);
     }
-    return plist->size;
+    return next;
 }
 
-extern int dl_remove_all(DLinkedList* plist, int (*cleanup)(Entity* e))
+extern int dlist_remove_all(DLinkedList* plist, int (*cleanup)(Entity* e))
 {
     ListNode* pf = LIST_FIRST(plist);
     while(pf != LIST_TAIL(plist)){

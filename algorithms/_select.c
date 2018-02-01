@@ -24,12 +24,12 @@ extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmi
     }
  
     for (; i<size; i+=2){
-        if (compare(&arr[i], &arr[i+1]) < 0){
-            *pmin = (compare(&arr[i], pmin) < 0) ? &arr[i] : *pmin;
-            *pmax = (compare(&arr[i+i], pmax) > 0) ? &arr[i+1] : *pmax;
+        if (compare(&arr[i], &arr[i+1]) == -1){
+            *pmin = (compare(&arr[i], *pmin) == -1) ? &arr[i] : *pmin;
+            *pmax = (compare(&arr[i+i], *pmax) == 1) ? &arr[i+1] : *pmax;
         }else{
-            *pmin = (compare(&arr[i+1], pmin) < 0) ? &arr[i+1] : *pmin;
-            *pmax = (compare(&arr[i], pmax) > 0) ? &arr[i] : *pmax;
+            *pmin = (compare(&arr[i+1], *pmin) == -1) ? &arr[i+1] : *pmin;
+            *pmax = (compare(&arr[i], *pmax) ==1 ) ? &arr[i] : *pmax;
         }
     }
     
