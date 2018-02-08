@@ -195,7 +195,7 @@ void test_randomized_select_imax(void){
 
 void test_linked_list(void) {
    DLinkedList list;
-   dlist_init(&list, NULL);
+   dlist_init(&list);
    
    fill_linked_list_random(&list, pkv_arr, arr_size);
 

@@ -2,15 +2,10 @@
 #include "_entity.h"
 #include "_d_linked_list.h"
 
-extern int dlist_init(DLinkedList* plist, ecompare func){
+extern int dlist_init(DLinkedList* plist){
    plist->size = 0;
    LIST_FIRST(plist) = LIST_HEAD(plist);
    LIST_LAST(plist)  = LIST_TAIL(plist);
-   if (func) {
-       plist->compare = func;
-   }else{
-       plist->compare = base_compare;
-   }
    return 0;
 }
 
@@ -53,11 +48,9 @@ extern ListNode* dlist_find(DLinkedList* plist, ListNode* start_from, Entity e, 
     ListNode* pf;
     if (_entity)
         *_entity = NULL;
-    int i=0;
 
     for(pf = start_from; pf != LIST_TAIL(plist); pf = pf->next){
-        if ( (filter && filter(&(pf->_entity), &e)) 
-           || plist->compare(&(pf->_entity), &e) == 0){
+        if ( filter && filter(&(pf->_entity), &e) ){
            if (_entity)
                 *_entity =  &(pf->_entity);
             return pf;
