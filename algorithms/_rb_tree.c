@@ -2,7 +2,7 @@
 #include "_entity.h"
 #include "_rb_tree.h"
 
-extern int init_rbtree(RBTree* pt, ecompare func)
+extern int init_rbtree(RBTree* pt, Ecmp func)
 {
 
    pt->root = NULL;
@@ -129,18 +129,18 @@ extern int right_rotate(RBTree* prb, RBTreeNode* px)
    return 0;
 }
 
-extern RBTreeNode* rb_search(RBTree* ptree, RBTreeNode* pt, Entity e, Entity** entity)
+extern RBTreeNode* rb_search(RBTree* ptree, RBTreeNode* pt, Entity e, int(*filter)(Entity*e1, Entity*e2), Entity** entity)
 {
-    if (pt == NULL || ptree->compare(&(pt->_entity), &e) == 0 ){
+    if (pt == NULL || filter(&(pt->_entity), &e) == 0 ){
         if (pt && entity){
             *entity = &(pt->_entity);
         }
         return pt;
     }
-    if (ptree->compare(&(pt->_entity), &e) == 1){
-        return rb_search(ptree, pt->left, e, entity);
-    }else if (ptree->compare(&(pt->_entity), &e) == -1){
-    	return rb_search(ptree, pt->right, e, entity);
+    if (filter(&(pt->_entity), &e) == 1){
+        return rb_search(ptree, pt->left, e, filter, entity);
+    }else if (filter(&(pt->_entity), &e) == -1){
+    	return rb_search(ptree, pt->right, e, filter, entity);
     }else{
         return NULL;
     }
@@ -421,9 +421,9 @@ extern RBTreeNode* rb_remove(RBTree* prb, RBTreeNode* pz)
     return py;
 }
 
-extern int rb_delete(RBTree* prb, Entity e, Entity *entity)
+extern int rb_delete(RBTree* prb, Entity e, int(*filter)(Entity*e1, Entity*e2), Entity *entity)
 {
-	RBTreeNode* pz = rb_search(prb, prb->root, e, NULL);
+	RBTreeNode* pz = rb_search(prb, prb->root, e, filter, NULL);
     if (pz){
         RBTreeNode* pnd = rb_remove(prb, pz);
         //pnd->_entity.cleanup && pnd->_entity.cleanup();

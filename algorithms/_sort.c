@@ -6,7 +6,7 @@
 
 #define SORT_DEBUG
 
-extern int insertion_sort(Entity kv_arr[], size_t size, ecompare compare) {
+extern int insertion_sort(Entity kv_arr[], size_t size, Ecmp compare) {
    
    int i, j; 
    for(j=1; j<size; ++j){
@@ -21,7 +21,7 @@ extern int insertion_sort(Entity kv_arr[], size_t size, ecompare compare) {
    return 0;
 }
 
-extern int merge_sort(Entity kv_arr[], size_t s1, size_t s2, ecompare compare){
+extern int merge_sort(Entity kv_arr[], size_t s1, size_t s2, Ecmp compare){
     if (s1 < s2){
     	size_t sm = (s1+s2)/2;
 		merge_sort(kv_arr, s1, sm, compare);
@@ -31,7 +31,7 @@ extern int merge_sort(Entity kv_arr[], size_t s1, size_t s2, ecompare compare){
     return 0;
 }
 
-extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2, ecompare compare)
+extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2, Ecmp compare)
 { 
    size_t i,j, k;
    size_t l_sz = sm-s1+1;
@@ -71,7 +71,7 @@ extern int merge(Entity kv_arr[], size_t s1, size_t sm, size_t s2, ecompare comp
    return 0;
 }
 
-extern int partition(Entity arr[], int p, int r, ecompare compare){
+extern int partition(Entity arr[], int p, int r, Ecmp compare){
 
     // 将最后一个做为标杆
     //int key = arr[r].key;
@@ -103,7 +103,7 @@ extern int partition(Entity arr[], int p, int r, ecompare compare){
     return i+1;
 }
 
-extern int randomized_partition(Entity arr[], int p, int r, ecompare compare){
+extern int randomized_partition(Entity arr[], int p, int r, Ecmp compare){
    srand(time(NULL));
    int dest = r - p + 1;
    int i = ( rand() % dest ) + p;
@@ -115,7 +115,7 @@ extern int randomized_partition(Entity arr[], int p, int r, ecompare compare){
    return partition(arr, p, r, compare);
 }
 
-extern int quick_sort(Entity arr[], int p, int r, ecompare compare, int (* partition_func)(Entity[], int, int, ecompare)){
+extern int quick_sort(Entity arr[], int p, int r, Ecmp compare, int (* partition_func)(Entity[], int, int, Ecmp)){
 
    if (p < r){
        int q = partition_func(arr, p, r, compare);

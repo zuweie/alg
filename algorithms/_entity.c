@@ -1,30 +1,29 @@
 #include <string.h>
 #include "_entity.h"
 
+#define NUM_CMP(x, y) do {       \
+    if ((x) == (y)) return 0;     \
+    else if ((x) < (y)) return -1;\
+    else return 1;                \
+} while(0)
+
+#define STR_CMP(x, y) do {     \
+    int ret = strcmp((x), (y)); \
+    if (ret > 0) return 1;      \
+    else if (ret <0 ) return -1;\
+    else return 0;               \
+}while(0)
+
 extern int base_compare (Entity* e1, Entity* e2){
     Vtype vtype = e1->_vtype;
     int ret;
     switch (vtype) {
         case EINT:
-            if (e1->_data.ie == e2->_data.ie)
-                return 0;
-            else if (e1->_data.ie > e2->_data.ie) 
-                return 1;
-            else
-                return -1;
+            NUM_CMP(e1->_data.ie, e2->_data.ie);
         case EFLOAT:
-            if (e1->_data.fe == e2->_data.fe)
-                return 0;
-            else if (e1->_data.fe > e2->_data.fe) 
-                return 1;
-            else
-                return -1;
+            NUM_CMP(e1->_data.fe, e2->_data.fe);
         case ESTRING:
-            ret = strcmp(e1->_data.string, e2->_data.string);
-            if (ret > 0) return 1;
-            else if (ret < 0 ) return -1;
-            else if (ret == 0) return 0;
-            else return -2;
+            STR_CMP(e1->_data.string, e2->_data.string);
         case EPOINTER:
             return e1->_data.pointer == e2->_data.pointer ? 0: -2;
     }

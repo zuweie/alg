@@ -3,7 +3,7 @@
 #include "_sort.h"
 
 // 选最大最小的函数
-extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmin, ecompare compare){
+extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmin, Ecmp compare){
 
     int i,j;
     if ((size % 2) == 0){
@@ -37,7 +37,7 @@ extern int select_max_min(Entity arr[], size_t size, Entity** pmax, Entity** pmi
 }
 
 // 选择第i个大的数。
-extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pret, ecompare compare){
+extern int randomized_select_imax(Entity arr[], int p, int r, int i, Entity** pret, Ecmp compare){
     if (p == r){
       *pret = &arr[p];
       return 0;

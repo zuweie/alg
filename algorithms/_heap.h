@@ -7,8 +7,8 @@
 #define LEFT(i) ((i<<1) + 0x1)
 #define RIGHT(i) ((i<<1) + 0x2)
 
-extern int max_heapify(Entity arr[], int i, size_t heap_sz, ecompare compare);
-extern int build_max_heap(Entity arr[], size_t size, ecompare compare);
-extern int heap_sort(Entity arr[], size_t size, ecompare);
+extern int max_heapify(Entity arr[], int i, size_t heap_sz, Ecmp compare);
+extern int build_max_heap(Entity arr[], size_t size, Ecmp compare);
+extern int heap_sort(Entity arr[], size_t size, Ecmp compare);
 
 #endif

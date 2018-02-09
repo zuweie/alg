@@ -7,7 +7,7 @@
 // 这里的过程是自上而下的。
 // 在i个元素开始检查。若有子比其则换。
 
-extern int max_heapify(Entity arr[], int i, size_t heap_sz, ecompare compare){
+extern int max_heapify(Entity arr[], int i, size_t heap_sz, Ecmp compare){
 
     int l = LEFT(i);
     int r = RIGHT(i);
@@ -32,7 +32,7 @@ extern int max_heapify(Entity arr[], int i, size_t heap_sz, ecompare compare){
     return 0;
 }
 
-extern int build_max_heap(Entity arr[], size_t size, ecompare compare){
+extern int build_max_heap(Entity arr[], size_t size, Ecmp compare){
    int i = size/2 -1;
    for (;i>=0; --i){
 	max_heapify(arr, i, size, compare);
@@ -40,7 +40,7 @@ extern int build_max_heap(Entity arr[], size_t size, ecompare compare){
    return 0;
 }
  
-extern int heap_sort(Entity arr[], size_t size, ecompare compare){
+extern int heap_sort(Entity arr[], size_t size, Ecmp compare){
     build_max_heap(arr, size, compare);
     int i;
     Entity tmp;
