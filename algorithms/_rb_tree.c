@@ -18,7 +18,7 @@ extern int init_rbtree(RBTree* pt, Ecmp func)
 
 extern RBTreeNode* create_rbnode(Entity e)
 {
-    RBTreeNode* pnode = (RBTreeNode*) malloc(sizeof(RBTreeNode*));
+    RBTreeNode* pnode = (RBTreeNode*) malloc(sizeof(RBTreeNode));
     pnode->parent   = NULL;
     pnode->left     = NULL;
     pnode->right    = NULL;

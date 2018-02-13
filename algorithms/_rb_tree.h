@@ -1,6 +1,6 @@
 #ifndef __RB_TREE_H__
 #define __RB_TREE_H__
-
+#include <stdlib.h>
 #include "_entity.h"
 
 #define RED 0
