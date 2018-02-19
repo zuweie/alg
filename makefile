@@ -39,7 +39,8 @@ $(programs): $(alg_sources) $(test_sources)
 libs: $(libs)
 
 $(libs): $(alg_objects)
-	$(AR) -r $(bin_dir)/$@ $(alg_objects) 
+	mkdir -p $(exportheader_dir)
+	$(AR) -r $(bin_dir)/$@ $^
 	cp $(include_dirs)/*.h $(exportheader_dir)
 
 .PHONY: clean
