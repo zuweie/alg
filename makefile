@@ -1,11 +1,12 @@
 programs    := test_alg
 libs        := libalg.a
-sources     := 
+alg_sources  := 
+test_sources :=
 extra_clean := *~
 
 
-objects       = $(subst .c,.o,$(sources))
-dependencies  = $(subst .c,.d,$(sources))
+alg_objects   = $(subst .c,.o,$(alg_sources))
+test_objects  = $(subst .c,.o,$(test_sources))
 
 
 project_dir   := $(shell pwd)
@@ -17,8 +18,9 @@ exportheader_dir := $(project_dir)/out/export_header/
 
 bin_dir       := out
 
-CFLAGS     += $(addprefix -I, $(include_dirs)) -lm -lcunit -g
-vpath %.h $(include_dirs)
+INCLUDE_FLAGS   := $(addprefix -I, $(include_dirs))
+PROGRAM_CFLAGS  += $(INCLUDE_FLAGS) -lm -lcunit -g
+LIBS_CFLAGS     += $(INCLUDE_FLAGS) -lm -g
 
 MV  :=  mv -f
 RM  :=  rm -f
@@ -30,27 +32,18 @@ include test_case/test_case.mk
 .PHONY: all
 all: $(programs)
 
-$(programs): $(objects)
-	$(CC) $(objects) $(CFLAGS) -o $(bin_dir)/$@
+$(programs): $(alg_sources) $(test_sources)
+	$(CC) $(PROGRAM_CFLAGS) $^ -o $(bin_dir)/$@
 
 .PHONY: libs
 libs: $(libs)
 
-$(libs): $(objects)
-	$(AR) -r $(bin_dir)/$@ $(objects) 
+$(libs): $(alg_objects)
+	$(AR) -r $(bin_dir)/$@ $(alg_objects) 
 	cp $(include_dirs)/*.h $(exportheader_dir)
 
 .PHONY: clean
 clean:
-	$(RM) $(objects) $(bin_dir)/$(programs) $(bin_dir)/$(libs) $(exportheader_dir)/*.h $(dependencies) $(extra_clean)
-
-ifneq "$(MAKECMDGOALS)" "clean"
-   include $(dependencies)
-endif
-
-%.d: %.c
-	$(CC) $(CFLAGS) $(TARGET_ACH) -MM $< | \
-	$(SED) 's, \($notdi $*)\.o\) *:,$(dir $@)\1 $@: ,' > $@.tmp
-	$(MV) $@.tmp $@
+	$(RM) $(alg_objects) $(test_objects) $(bin_dir)/$(programs) $(bin_dir)/$(libs) $(exportheader_dir)/*.h $(extra_clean)
 
  

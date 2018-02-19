@@ -3,7 +3,7 @@ local_sources  := _hash.c _d_linked_list.c _select.c  _tree.c _sort.c _heap.c _r
 local_src      := $(addprefix $(local_dir)/, $(local_sources))
 local_ex_clean := $(local_dir)/*.*~
 
-sources     += $(local_src)
+alg_sources    += $(local_src)
 extra_clean += $(local_ex_clean) 
 
 
